@@ -24,18 +24,18 @@ export declare type Msingle = {
 };
 export declare type Marray = Array<Micheline>;
 export declare type Micheline = Mprim | Mstring | Mbytes | Mint | Msingle | Mpair | Melt | Marray;
-declare type MTprim = {
+export declare type MTprim = {
     "prim": "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" | "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" | "never" | "operation" | "signature" | "string" | "timestamp" | "unit";
 };
-declare type MTprimAnnots = {
+export declare type MTprimAnnots = {
     "prim": "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" | "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" | "never" | "operation" | "signature" | "string" | "timestamp" | "unit";
     "annots": Array<string>;
 };
-declare type MTsingle = {
+export declare type MTsingle = {
     "prim": "contract" | "list" | "option" | "set" | "ticket";
     "args": [MichelineType];
 };
-declare type MTint = {
+export declare type MTint = {
     "prim": "sapling_transaction" | "sapling_state";
     "args": [
         {
@@ -43,7 +43,7 @@ declare type MTint = {
         }
     ];
 };
-declare type MTpair = {
+export declare type MTpair = {
     "prim": "big_map" | "lambda" | "map" | "or" | "pair";
     "args": [MichelineType, MichelineType];
 };
@@ -130,5 +130,4 @@ export declare class Entrypoint {
     constructor(a: string, n: string);
     to_mich(): Micheline;
 }
-export {};
 //# sourceMappingURL=main.d.ts.map

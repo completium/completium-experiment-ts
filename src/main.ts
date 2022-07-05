@@ -47,32 +47,32 @@ export type Micheline =
 
 /* Michleline Type --------------------------------------------------------- */
 
-type MTprim = {
+export type MTprim = {
   "prim"   :  "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" |
               "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
               "never" | "operation" | "signature" | "string" | "timestamp" | "unit"
 }
 
-type MTprimAnnots = {
+export type MTprimAnnots = {
   "prim"   :  "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" |
               "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
               "never" | "operation" | "signature" | "string" | "timestamp" | "unit"
   "annots" : Array<string>
 }
 
-type MTsingle = {
+export type MTsingle = {
   "prim"   : "contract" | "list" | "option" | "set" | "ticket",
   "args"   : [ MichelineType ]
 }
 
-type MTint   = {
+export type MTint   = {
   "prim"   : "sapling_transaction" | "sapling_state",
   "args"   : [
     { "int" : string }
   ]
 }
 
-type MTpair  = {
+export type MTpair  = {
   "prim"   : "big_map" | "lambda" | "map" | "or" | "pair",
   "args"   : [ MichelineType, MichelineType ]
 }
