@@ -1,0 +1,40 @@
+{
+  "name": "@completium/experiment-ts",
+  "version": "0.0.1",
+  "description": "Test Archetype contracts in TS ",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "/build"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "npm test",
+    "build": "rm -rf ./build && npx tsc --outDir build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/completium/completium-experiment-ts.git"
+  },
+  "keywords": [
+    "tezos",
+    "archetype",
+    "test",
+    "typescript"
+  ],
+  "author": "Completium",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/completium/completium-experiment-ts/issues"
+  },
+  "homepage": "https://github.com/completium/completium-experiment-ts#readme",
+  "dependencies": {
+    "@completium/completium-cli": "^0.4.4"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.1.1",
+    "typescript": "^4.7.4"
+  }
+}
