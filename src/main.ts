@@ -72,8 +72,13 @@ export type MTint   = {
   ]
 }
 
+export type MTPairArray = {
+  "prim"   : "pair",
+  "args"   : Array<MichelineType>
+}
+
 export type MTpair  = {
-  "prim"   : "big_map" | "lambda" | "map" | "or" | "pair",
+  "prim"   : "big_map" | "lambda" | "map" | "or",
   "args"   : [ MichelineType, MichelineType ]
 }
 
@@ -83,6 +88,7 @@ export type MichelineType =
 | MTsingle
 | MTint
 | MTpair
+| MTPairArray
 
 
 /* Interfaces -------------------------------------------------------------- */
@@ -223,6 +229,17 @@ export const prim_to_mich_type = (
   }
 }
 
+export const prim_annot_to_mich_type = (
+  p : "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" |
+      "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
+      "never" | "operation" | "signature" | "string" | "timestamp" | "unit",
+  a : Array<string>) : MichelineType => {
+  return {
+    prim: p,
+    annots: a
+  }
+}
+
 export const none_mich : Micheline = {
   "prim": "None"
 }
@@ -253,10 +270,17 @@ export const pair_to_mich = (l : Array<Micheline>) : Micheline => {
   }
 }
 
-export const pair_to_mich_type = (a : MichelineType, b : MichelineType) : MichelineType => {
+export const pair_to_mich_type = (prim: "big_map" | "lambda" | "map" | "or", a : MichelineType, b : MichelineType) : MichelineType => {
+  return {
+    prim: prim,
+    args: [ a, b ]
+  }
+}
+
+export const pair_array_to_mich_type = (l : Array<MichelineType>) : MichelineType => {
   return {
     prim: "pair",
-    args: [ a, b ]
+    args: l
   }
 }
 
