@@ -246,10 +246,10 @@ export const elt_to_mich = (a : Micheline, b : Micheline) : Micheline => {
   }
 }
 
-export const pair_to_mich = (a : Micheline, b : Micheline) : Micheline => {
+export const pair_to_mich = (l : Array<Micheline>) : Micheline => {
   return {
     prim: "Pair",
-    args: [ a, b ]
+    args: l
   }
 }
 
