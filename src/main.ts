@@ -256,6 +256,10 @@ export const bigint_to_mich = (v : bigint) : Micheline => {
   return { "int" : v.toString() }
 }
 
+export const date_to_mich = (v : Date) : Micheline => {
+  return { "string" : v.toISOString() }
+}
+
 export const elt_to_mich = (a : Micheline, b : Micheline) : Micheline => {
   return {
     prim: "Elt",
