@@ -336,3 +336,29 @@ export class Entrypoint {
     return string_to_mich(this.addr+"%"+this.name)
   }
 }
+
+export const get_pair_values = (x : Micheline) : Array<Micheline> => {
+  return (x as Mpair)["args"]
+}
+
+export const get_string_value = (x : Micheline) : string => {
+  return (x as Mstring)["string"]
+}
+
+export const get_bigint_value = (x : Micheline) : bigint => {
+  return BigInt((x as Mint)["int"])
+}
+
+export const get_date_value = (x : Micheline) : Date => {
+  return new Date((x as Mstring)["string"])
+}
+
+export const get_map_value = <K, V>(x : Micheline, f: { (k : Micheline, v : Micheline) : [K, V] }) : Array<[K, V]>  => {
+  return (x as Marray).map((elt : Micheline) => {
+    const k = (elt as Mpair)["args"][0]
+    const v = (elt as Mpair)["args"][1]
+    return f(k, v)
+  })
+}
+
+/* TODO complete getter interface */
