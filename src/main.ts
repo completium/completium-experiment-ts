@@ -109,7 +109,7 @@ export interface Parameters {
 /* Int Nat Entrypoint Classes ---------------------------------------------- */
 
 export class Int extends BigNumber {
-  constructor(v : string | number) {
+  constructor(v : string | number | BigNumber | Nat | Rational) {
     const bn = new BigNumber(v)
     if (bn.comparedTo(bn.integerValue()) != 0) {
       throw new Error("Not an Int value: "+v)
@@ -120,10 +120,28 @@ export class Int extends BigNumber {
   to_mich() {
     return { "int" : this.toString() }
   }
+  to_big_number() : BigNumber {
+    return this
+  }
+  plus(x : Int) : Int {
+    return new Int(super.plus(x.to_big_number()))
+  }
+  minus(x : Int) : Int {
+    return new Int(super.minus(x.to_big_number()))
+  }
+  times(x : Int) : Int {
+    return new Int(super.times(x.to_big_number()))
+  }
+  div(x : Int) : BigNumber {
+    return super.div(x.to_big_number())
+  }
+  equals(x : Int) : boolean {
+    return super.isEqualTo(x.to_big_number())
+  }
 }
 
 export class Nat extends BigNumber {
-  constructor(v : string | number) {
+  constructor(v : string | number | BigNumber | Int | Rational) {
     const bn = new BigNumber(v)
     if (bn.comparedTo(bn.integerValue()) != 0 || bn.isLessThan(new BigNumber(0))) {
       throw new Error("Not an Nat value: "+v)
@@ -134,10 +152,28 @@ export class Nat extends BigNumber {
   to_mich() {
     return { "int" : this.toString() }
   }
+  to_big_number() : BigNumber {
+    return this
+  }
+  plus(x : Nat) : Nat {
+    return new Nat(super.plus(x.to_big_number()))
+  }
+  minus(x : Nat) : Int {
+    return new Int(super.minus(x.to_big_number()))
+  }
+  times(x : Nat) : Nat {
+    return new Nat(super.times(x.to_big_number()))
+  }
+  div(x : Nat) : Rational {
+    return new Rational(super.div(x.to_big_number()))
+  }
+  equals(x : Nat) : boolean {
+    return super.isEqualTo(x.to_big_number())
+  }
 }
 
 export class Rational extends BigNumber {
-  constructor(v : string | number) {
+  constructor(v : string | number | BigNumber | Int | Nat) {
     super(v)
   }
   to_mich() : Micheline {
@@ -149,6 +185,30 @@ export class Rational extends BigNumber {
         { "int" : denom.toString() }
       ]
     }
+  }
+  to_big_number() : BigNumber {
+    return this
+  }
+  plus(x : Rational) : Rational {
+    return new Rational(super.plus(x.to_big_number()))
+  }
+  minus(x : Rational) : Rational {
+    return new Rational(super.minus(x.to_big_number()))
+  }
+  times(x : Rational) : Rational {
+    return new Rational(super.times(x.to_big_number()))
+  }
+  div(x : Rational) : Rational {
+    return new Rational(super.div(x.to_big_number()))
+  }
+  floor() : Int {
+    return new Int(super.integerValue(BigNumber.ROUND_FLOOR))
+  }
+  ceil() : Int {
+    return new Int(super.integerValue(BigNumber.ROUND_CEIL))
+  }
+  equals(x : Rational) : boolean {
+    return super.isEqualTo(x.to_big_number())
   }
 }
 
