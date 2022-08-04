@@ -1,4 +1,5 @@
 const Completium = require('@completium/completium-cli');
+import { BigNumber } from 'bignumber.js'
 
 /* Michleline -------------------------------------------------------------- */
 
@@ -103,6 +104,64 @@ export interface Account {
 export interface Parameters {
   as     : Account,
   amount : bigint
+}
+
+/* Int Nat Entrypoint Classes ---------------------------------------------- */
+
+export class Int extends BigNumber {
+  constructor(v : string | number) {
+    const bn = new BigNumber(v)
+    if (bn.comparedTo(bn.integerValue()) != 0) {
+      throw new Error("Not an Int value: "+v)
+    } else {
+      super(v)
+    }
+  }
+  to_mich() {
+    return { "int" : this.toString() }
+  }
+}
+
+export class Nat extends BigNumber {
+  constructor(v : string | number) {
+    const bn = new BigNumber(v)
+    if (bn.comparedTo(bn.integerValue()) != 0 || bn.isLessThan(new BigNumber(0))) {
+      throw new Error("Not an Nat value: "+v)
+    } else {
+      super(v)
+    }
+  }
+  to_mich() {
+    return { "int" : this.toString() }
+  }
+}
+
+export class Rational extends BigNumber {
+  constructor(v : string | number) {
+    super(v)
+  }
+  to_mich() : Micheline {
+    const [ num, denom ] = this.toFraction()
+    return {
+      prim: "Pair",
+      args: [
+        { "int" : num.toString() },
+        { "int" : denom.toString() }
+      ]
+    }
+  }
+}
+
+export class Entrypoint {
+  addr : string
+  name : string
+  constructor(a : string, n : string) {
+    this.addr = a
+    this.name =n
+  }
+  to_mich() {
+    return string_to_mich(this.addr+"%"+this.name)
+  }
 }
 
 /* Experiment API ---------------------------------------------------------- */
@@ -252,10 +311,6 @@ export const bool_to_mich = (v : boolean) : Micheline => {
   return { "string" : v ? "True" : "False" }
 }
 
-export const bigint_to_mich = (v : bigint) : Micheline => {
-  return { "int" : v.toString() }
-}
-
 export const date_to_mich = (v : Date) : Micheline => {
   return { "string" : v.toISOString() }
 }
@@ -325,18 +380,6 @@ export const string_cmp = (a : string, b : string) => {
   return a < b ? -1 : 1;
 };
 
-export class Entrypoint {
-  addr : string
-  name : string
-  constructor(a : string, n : string) {
-    this.addr = a
-    this.name =n
-  }
-  to_mich() {
-    return string_to_mich(this.addr+"%"+this.name)
-  }
-}
-
 export const mich_to_pairs = (x : Micheline) : Array<Micheline> => {
   return (x as Mpair)["args"]
 }
@@ -345,12 +388,22 @@ export const mich_to_string = (x : Micheline) : string => {
   return (x as Mstring)["string"]
 }
 
-export const mich_to_bigint = (x : Micheline) : bigint => {
-  return BigInt((x as Mint)["int"])
-}
-
 export const mich_to_date = (x : Micheline) : Date => {
   return new Date((x as Mstring)["string"])
+}
+
+export const mich_to_int = (x : Micheline) : Int => {
+  return new Int((x as Mint)["int"])
+}
+
+export const mich_to_nat = (x : Micheline) : Nat => {
+  return new Nat((x as Mint)["int"])
+}
+
+export const mich_to_rational = (x : Micheline) : BigNumber => {
+  const numerator = new BigNumber(((x as Mpair).args[0] as Mint)["int"])
+  const denominator = new BigNumber(((x as Mpair).args[1] as Mint)["int"])
+  return numerator.dividedBy(denominator)
 }
 
 export const mich_to_map = <K, V>(x : Micheline, f: { (k : Micheline, v : Micheline) : [K, V] }) : Array<[K, V]>  => {
