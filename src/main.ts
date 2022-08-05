@@ -64,6 +64,7 @@ export type MTprimAnnots = {
 export type MTsingle = {
   "prim"   : "contract" | "list" | "option" | "set" | "ticket",
   "args"   : [ MichelineType ]
+  "annots" ?: Array<string>
 }
 
 export type MTint   = {
@@ -106,78 +107,127 @@ export interface Parameters {
   amount : bigint
 }
 
+/* Archetype value */
+
+abstract class ArchetypeType {
+  abstract equals : (v : this) => boolean
+  abstract to_mich() : Micheline
+  abstract toString() : string
+}
+
 /* Int Nat Entrypoint Classes ---------------------------------------------- */
 
-export class Int extends BigNumber {
-  constructor(v : string | number | BigNumber | Nat | Rational) {
-    const bn = new BigNumber(v)
-    if (bn.comparedTo(bn.integerValue()) != 0) {
-      throw new Error("Not an Int value: "+v)
-    } else {
-      super(v)
-    }
-  }
-  to_mich() {
-    return { "int" : this.toString() }
-  }
-  to_big_number() : BigNumber {
-    return this
-  }
-  plus(x : Int) : Int {
-    return new Int(super.plus(x.to_big_number()))
-  }
-  minus(x : Int) : Int {
-    return new Int(super.minus(x.to_big_number()))
-  }
-  times(x : Int) : Int {
-    return new Int(super.times(x.to_big_number()))
-  }
-  div(x : Int) : BigNumber {
-    return super.div(x.to_big_number())
-  }
-  equals(x : Int) : boolean {
-    return super.isEqualTo(x.to_big_number())
-  }
-}
-
-export class Nat extends BigNumber {
-  constructor(v : string | number | BigNumber | Int | Rational) {
-    const bn = new BigNumber(v)
-    if (bn.comparedTo(bn.integerValue()) != 0 || bn.isLessThan(new BigNumber(0))) {
-      throw new Error("Not an Nat value: "+v)
-    } else {
-      super(v)
-    }
-  }
-  to_mich() {
-    return { "int" : this.toString() }
-  }
-  to_big_number() : BigNumber {
-    return this
-  }
-  plus(x : Nat) : Nat {
-    return new Nat(super.plus(x.to_big_number()))
-  }
-  minus(x : Nat) : Int {
-    return new Int(super.minus(x.to_big_number()))
-  }
-  times(x : Nat) : Nat {
-    return new Nat(super.times(x.to_big_number()))
-  }
-  div(x : Nat) : Rational {
-    return new Rational(super.div(x.to_big_number()))
-  }
-  equals(x : Nat) : boolean {
-    return super.isEqualTo(x.to_big_number())
-  }
-}
-
-export class Rational extends BigNumber {
-  constructor(v : string | number | BigNumber | Int | Nat) {
-    super(v)
+export class Address implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    this._content = v
+    /* TODO check address format */
   }
   to_mich() : Micheline {
-    const [ num, denom ] = this.toFraction()
+    return string_to_mich(this._content)
+  }
+  equals(a : Address) : boolean {
+    return this._content == a.toString()
+  }
+  toString(): string {
+      return this._content
+  }
+}
+
+export class Duration implements ArchetypeType {
+  private _content : number
+  constructor(v : string) {
+    this._content = 0
+    /* TODO converts Archetype duration literal to number of seconds */
+  }
+  to_mich() : Micheline {
+    return { "int" : this._content.toString() }
+  }
+  equals(a : Duration) : boolean {
+    return this._content.toString() == a.toString()
+  }
+  toString(): string {
+      return this._content.toString()
+  }
+}
+
+export class Int implements ArchetypeType {
+  private _content : BigNumber
+  constructor(v : string | number | BigNumber) {
+    this._content = new BigNumber(v)
+    if (this._content.comparedTo(this._content.integerValue()) != 0) {
+      throw new Error("Not an Int value: "+v)
+    } else {
+      this._content = new BigNumber(v)
+    }
+  }
+  to_mich = () : Micheline => {
+    return { "int" : this._content.toString() }
+  }
+  to_big_number() : BigNumber {
+    return this._content
+  }
+  plus(x : Int) : Int {
+    return new Int(this._content.plus(x.to_big_number()))
+  }
+  minus(x : Int) : Int {
+    return new Int(this._content.minus(x.to_big_number()))
+  }
+  times(x : Int) : Int {
+    return new Int(this._content.times(x.to_big_number()))
+  }
+  div(x : Int) : BigNumber {
+    return this._content.div(x.to_big_number())
+  }
+  equals = (x : Int) : boolean => {
+    return this._content.isEqualTo(x.to_big_number())
+  }
+  toString() : string {
+    return this._content.toString()
+  }
+}
+
+export class Nat implements ArchetypeType {
+  private _content : BigNumber
+  constructor(v : string | number | BigNumber) {
+    this._content = new BigNumber(v)
+    if (this._content.comparedTo(this._content.integerValue()) != 0 || this._content.isLessThan(new BigNumber(0))) {
+      throw new Error("Not an Nat value: "+v)
+    }
+  }
+  to_mich = () : Micheline => {
+    return { "int" : this._content.toString() }
+  }
+  to_big_number() : BigNumber {
+    return this._content
+  }
+  plus(x : Nat) : Nat {
+    return new Nat(this._content.plus(x.to_big_number()))
+  }
+  minus(x : Nat) : Int {
+    return new Int(this._content.minus(x.to_big_number()))
+  }
+  times(x : Nat) : Nat {
+    return new Nat(this._content.times(x.to_big_number()))
+  }
+  div(x : Nat) : Rational {
+    return new Rational(this._content.div(x.to_big_number()))
+  }
+  equals = (x : Nat) : boolean => {
+    return this._content.isEqualTo(x.to_big_number())
+  }
+  toString = () => {
+    return this._content.toString()
+  }
+}
+
+export class Rational implements ArchetypeType {
+  private _content : BigNumber
+  constructor(v : string | number | BigNumber) {
+    this._content = new BigNumber(v)
+  }
+  to_mich = () : Micheline => {
+    const [ num, denom ] = this._content.toFraction()
     return {
       prim: "Pair",
       args: [
@@ -187,28 +237,66 @@ export class Rational extends BigNumber {
     }
   }
   to_big_number() : BigNumber {
-    return this
+    return this._content
   }
   plus(x : Rational) : Rational {
-    return new Rational(super.plus(x.to_big_number()))
+    return new Rational(this._content.plus(x.to_big_number()))
   }
   minus(x : Rational) : Rational {
-    return new Rational(super.minus(x.to_big_number()))
+    return new Rational(this._content.minus(x.to_big_number()))
   }
   times(x : Rational) : Rational {
-    return new Rational(super.times(x.to_big_number()))
+    return new Rational(this._content.times(x.to_big_number()))
   }
   div(x : Rational) : Rational {
-    return new Rational(super.div(x.to_big_number()))
+    return new Rational(this._content.div(x.to_big_number()))
   }
   floor() : Int {
-    return new Int(super.integerValue(BigNumber.ROUND_FLOOR))
+    return new Int(this._content.integerValue(BigNumber.ROUND_FLOOR))
   }
   ceil() : Int {
-    return new Int(super.integerValue(BigNumber.ROUND_CEIL))
+    return new Int(this._content.integerValue(BigNumber.ROUND_CEIL))
   }
-  equals(x : Rational) : boolean {
-    return super.isEqualTo(x.to_big_number())
+  equals = (x : Rational) : boolean => {
+    return this._content.isEqualTo(x.to_big_number())
+  }
+  toString = () : string => {
+    return this._content.toString()
+  }
+}
+
+export class Tez implements ArchetypeType {
+  private _content : BigNumber
+  constructor(v : string | number | BigNumber, unit : "tez" | "mutez" = "tez") {
+    this._content = new BigNumber(v)
+    switch(unit) {
+      case "mutez":
+        if (this._content.comparedTo(this._content.integerValue()) != 0)
+          throw new Error("Mutez value must be integer");
+        break
+      case "tez":
+        if (this._content.isLessThan(new BigNumber(0)) || this._content.isGreaterThan(new BigNumber("")))
+          throw new Error("Invalid Tez value")
+        this._content = new BigNumber(this._content.times(1000000).integerValue(BigNumber.ROUND_FLOOR))
+    }
+  }
+  to_mich = () : Micheline => {
+    return { "int" : this.toString() }
+  }
+  to_big_number() : BigNumber {
+    return this._content
+  }
+  plus(x : Tez) : Tez {
+    return new Tez(this._content.plus(x.to_big_number()))
+  }
+  times(x : Nat) : Tez {
+    return new Tez(this._content.times(x.to_big_number()))
+  }
+  equals = (x : Tez) : boolean => {
+    return this._content.isEqualTo(x.to_big_number())
+  }
+  toString = () : string => {
+    return this._content.toString()
   }
 }
 
@@ -217,11 +305,98 @@ export class Entrypoint {
   name : string
   constructor(a : string, n : string) {
     this.addr = a
-    this.name =n
+    this.name = n
   }
-  to_mich() {
-    return string_to_mich(this.addr+"%"+this.name)
+  to_mich = () : Micheline => {
+    return string_to_mich(this.toString())
   }
+  equals = (x : Entrypoint) : boolean => {
+    return this.addr == x.addr && this.name == x.name
+  }
+  toString() : string {
+    return this.addr + '%' + this.name
+  }
+}
+
+const none_mich : Micheline = {
+  "prim": "None"
+}
+
+const some_to_mich = (a : Micheline) : Micheline => {
+  return {
+    prim: "Some",
+    args: [ a ]
+  }
+}
+
+type optionArg =
+  boolean
+| string
+| Date
+| Duration
+| Address
+| Int
+| Nat
+| Rational
+| Tez
+| Option<any>
+
+export class Option<T extends optionArg> implements ArchetypeType {
+  _content : T | undefined
+  constructor(v : T | undefined) {
+    this._content = v
+  }
+  is_none() : boolean {
+    return this._content == undefined
+  }
+  is_some() : boolean {
+    return this._content != undefined
+  }
+  to_mich = () : Micheline => {
+    if (this._content == undefined) {
+      return none_mich
+    }
+    let mich
+    switch (typeof this._content) {
+      case "string": mich = string_to_mich(this._content); break;
+      case "boolean": mich = bool_to_mich(this._content); break;
+      case "object":
+        // js hack ...
+        if (this._content instanceof Date) {
+          const d = this._content as Date
+          mich = date_to_mich(d)
+        } else {
+          mich = this._content.to_mich();
+        }
+        break
+      default: throw new Error("to_mich : unknown type")
+    }
+    return some_to_mich(mich)
+  };
+  equals = (o : Option<T>) => {
+    return this.to_mich() == o.to_mich()
+  }
+  toString = () : string => {
+    if (this._content == undefined) {
+      return "None"
+    } else {
+      let str : string
+      switch (typeof this._content) {
+        case "string": str = this._content; break;
+        case "boolean": str = "" + this._content; break;
+        case "object":
+          // js hack ...
+          if (this._content instanceof Date) {
+            const d = this._content as Date
+            str = d.toISOString()
+          } else {
+            str = this._content.toString()
+          }
+        default: str = this._content.toString()
+      }
+      return "Some (" + str + ")"
+    }
+  };
 }
 
 /* Experiment API ---------------------------------------------------------- */
@@ -359,10 +534,6 @@ export const prim_annot_to_mich_type = (
   }
 }
 
-export const none_mich : Micheline = {
-  "prim": "None"
-}
-
 export const string_to_mich = (v : string) : Micheline => {
   return { "string" : v }
 }
@@ -410,18 +581,11 @@ export const option_to_mich_type = (a : MichelineType) : MichelineType => {
   }
 }
 
-export const some_to_mich = (a : Micheline) : Micheline => {
+export const option_annot_to_mich_type = (mt : MichelineType, a : Array<string>) : MichelineType => {
   return {
-    prim: "Some",
-    args: [ a ]
-  }
-}
-
-export const option_to_mich = <T>(v : T | undefined, to_mich : { (a : T) : Micheline }) : Micheline => {
-  if (v != undefined) {
-    return some_to_mich(to_mich(v))
-  } else {
-    return none_mich
+    prim: "option",
+    args: [ mt ],
+    annots : a
   }
 }
 
