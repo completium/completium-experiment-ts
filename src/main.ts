@@ -265,6 +265,25 @@ export class Rational implements ArchetypeType {
   }
 }
 
+export class Bytes implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : Bytes) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
 export class Tez implements ArchetypeType {
   private _content : BigNumber
   constructor(v : string | number | BigNumber, unit : "tez" | "mutez" = "tez") {
@@ -333,6 +352,7 @@ type optionArg =
   boolean
 | string
 | Date
+| Bytes
 | Duration
 | Address
 | Int
@@ -539,11 +559,11 @@ export const string_to_mich = (v : string) : Micheline => {
 }
 
 export const bool_to_mich = (v : boolean) : Micheline => {
-  return { "string" : v ? "True" : "False" }
+  return v ? { "prim" : "True" } : { "prim" : "False" }
 }
 
 export const date_to_mich = (v : Date) : Micheline => {
-  return { "string" : v.toISOString() }
+  return { "int" : "" + Math.floor(v.getTime() / 1000) }
 }
 
 export const elt_to_mich = (a : Micheline, b : Micheline) : Micheline => {
