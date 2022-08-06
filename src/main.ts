@@ -223,8 +223,8 @@ export class Nat implements ArchetypeType {
 
 export class Rational implements ArchetypeType {
   private _content : BigNumber
-  constructor(v : string | number | BigNumber) {
-    this._content = new BigNumber(v)
+  constructor(v : string | number | BigNumber, denom : BigNumber = new BigNumber(1)) {
+    this._content = (new BigNumber(v)).div(denom)
   }
   to_mich = () : Micheline => {
     const [ num, denom ] = this._content.toFraction()
@@ -362,18 +362,18 @@ type optionArg =
 | Option<any>
 
 export class Option<T extends optionArg> implements ArchetypeType {
-  _content : T | undefined
-  constructor(v : T | undefined) {
+  _content : T | undefined | null
+  constructor(v : T | undefined | null) {
     this._content = v
   }
   is_none() : boolean {
-    return this._content == undefined
+    return this._content == undefined || this._content == null
   }
   is_some() : boolean {
-    return this._content != undefined
+    return this._content != undefined && this._content != null
   }
   to_mich = () : Micheline => {
-    if (this._content == undefined) {
+    if (this._content == undefined || this._content == null) {
       return none_mich
     }
     let mich
@@ -394,10 +394,10 @@ export class Option<T extends optionArg> implements ArchetypeType {
     return some_to_mich(mich)
   };
   equals = (o : Option<T>) => {
-    return this.to_mich() == o.to_mich()
+    return this.toString() == o.toString()
   }
   toString = () : string => {
-    if (this._content == undefined) {
+    if (this._content == undefined || this._content == null) {
       return "None"
     } else {
       let str : string
