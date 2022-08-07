@@ -52,19 +52,13 @@ export type MTprim = {
   "prim"   :  "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" |
               "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
               "never" | "operation" | "signature" | "string" | "timestamp" | "unit"
-}
-
-export type MTprimAnnots = {
-  "prim"   :  "address" | "bls12_381_fr" | "bls12_381_g1" | "bls12_381_g2" | "bool" | "bytes" |
-              "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
-              "never" | "operation" | "signature" | "string" | "timestamp" | "unit"
   "annots" : Array<string>
 }
 
 export type MTsingle = {
   "prim"   : "contract" | "list" | "option" | "set" | "ticket",
   "args"   : [ MichelineType ]
-  "annots" ?: Array<string>
+  "annots" : Array<string>
 }
 
 export type MTint   = {
@@ -72,21 +66,23 @@ export type MTint   = {
   "args"   : [
     { "int" : string }
   ]
+  "annots" : Array<string>
 }
 
 export type MTPairArray = {
   "prim"   : "pair",
   "args"   : Array<MichelineType>
+  "annots" : Array<string>
 }
 
 export type MTpair  = {
   "prim"   : "big_map" | "lambda" | "map" | "or",
   "args"   : [ MichelineType, MichelineType ]
+  "annots" : Array<string>
 }
 
 export type MichelineType =
 | MTprim
-| MTprimAnnots
 | MTsingle
 | MTint
 | MTpair
@@ -539,7 +535,8 @@ export const prim_to_mich_type = (
       "chain_id" | "chest" | "chest_key" | "int" | "key" | "key_hash" | "mutez" | "nat" |
       "never" | "operation" | "signature" | "string" | "timestamp" | "unit") : MichelineType => {
   return {
-    prim: p
+    prim   : p,
+    annots : []
   }
 }
 
@@ -583,21 +580,24 @@ export const pair_to_mich = (l : Array<Micheline>) : Micheline => {
 export const pair_to_mich_type = (prim: "big_map" | "lambda" | "map" | "or", a : MichelineType, b : MichelineType) : MichelineType => {
   return {
     prim: prim,
-    args: [ a, b ]
+    args: [ a, b ],
+    annots: []
   }
 }
 
 export const pair_array_to_mich_type = (l : Array<MichelineType>) : MichelineType => {
   return {
     prim: "pair",
-    args: l
+    args: l,
+    annots: []
   }
 }
 
 export const option_to_mich_type = (a : MichelineType) : MichelineType => {
   return {
     prim: "option",
-    args: [ a ]
+    args: [ a ],
+    annots: []
   }
 }
 
@@ -628,6 +628,25 @@ export const mich_to_pairs = (x : Micheline) : Array<Micheline> => {
   return (x as Mpair)["args"]
 }
 
+export const annotated_mich_to_array = (x : Micheline, t : MichelineType) : Array<Micheline> => {
+  const internal_mich_to_array = (x : Micheline, t : MichelineType, acc : Array<Micheline>) : Array<Micheline> => {
+    if (t.annots.length > 0) {
+      acc.push(x)
+      return acc
+    } else {
+      switch (t.prim) {
+        case "pair" :
+          const pair = (x as Mpair)
+          pair.args.reduce((a : Array<Micheline>, x : Micheline, i : number) => {
+            return internal_mich_to_array(x, t.args[i], a)
+          }, acc)
+        default : throw new Error("internal_mich_to_array: found an unannotated node that is not a pair but a '" + t.prim + "'")
+      }
+    }
+  }
+  return internal_mich_to_array(x, t, [])
+}
+
 export const mich_to_string = (x : Micheline) : string => {
   return (x as Mstring)["string"]
 }
@@ -644,10 +663,44 @@ export const mich_to_nat = (x : Micheline) : Nat => {
   return new Nat((x as Mint)["int"])
 }
 
-export const mich_to_rational = (x : Micheline) : BigNumber => {
+export const mich_to_tez = (x : Micheline) : Tez => {
+  return new Tez((x as Mint)["int"])
+}
+
+export const mich_to_bytes = (x : Micheline) : Bytes => {
+  return new Bytes((x as Mbytes)["bytes"])
+}
+
+export const mich_to_duration = (x : Micheline) : Duration => {
+  return new Duration((x as Mint)["int"])
+}
+
+export const mich_to_address = (x : Micheline) : Address => {
+  return new Address((x as Mstring)["string"])
+}
+
+export const mich_to_bool = (x : Micheline) : boolean => {
+  switch ((x as Mprim).prim) {
+    case "False" : return false
+    case "True"  : return true
+    default : throw new Error("mich_to_bool: invalid prim '" + (x as Mprim).prim + "'")
+  }
+}
+
+export const mich_to_option = <T extends optionArg>(x : Micheline, mich_to : (_ : Micheline) => T) : Option<T> => {
+  if ("prim" in x) {
+    switch (x.prim) {
+      case "None" : return new Option<T>(undefined)
+      case "Some" : return new Option<T>(mich_to(x.args[0]))
+    }
+  }
+  throw new Error("mich_to_option: prim not found")
+}
+
+export const mich_to_rational = (x : Micheline) : Rational => {
   const numerator = new BigNumber(((x as Mpair).args[0] as Mint)["int"])
   const denominator = new BigNumber(((x as Mpair).args[1] as Mint)["int"])
-  return numerator.dividedBy(denominator)
+  return new Rational(numerator.dividedBy(denominator))
 }
 
 export const mich_to_map = <K, V>(x : Micheline, f: { (k : Micheline, v : Micheline) : [K, V] }) : Array<[K, V]>  => {
