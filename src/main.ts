@@ -724,6 +724,11 @@ export const mich_to_option = <T extends optionArg>(x : Micheline, mich_to : (_ 
   throw new Error("mich_to_option: prim not found")
 }
 
+export const mich_to_list = <T extends optionArg>(x : Micheline, mich_to: (_ : Micheline) => T) : Array<T> => {
+  const xlist = (x as Marray)
+  return xlist.map(mich_to)
+}
+
 export const mich_to_rational = (x : Micheline) : Rational => {
   const numerator = new BigNumber(((x as Mpair).args[0] as Mint)["int"])
   const denominator = new BigNumber(((x as Mpair).args[1] as Mint)["int"])
