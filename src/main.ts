@@ -362,6 +362,15 @@ export class Option<T extends optionArg> implements ArchetypeType {
   constructor(v : T | undefined | null) {
     this._content = v
   }
+  static None = <T extends optionArg>() => { return new Option<T>(null) }
+  static Some = <T extends optionArg>(v : T) => { return new Option<T>(v) }
+  get = () : T => {
+    if (this._content != undefined && this._content != null) {
+      return this._content
+    } else {
+      throw new Error("Option.get : is none")
+    }
+  }
   is_none() : boolean {
     return this._content == undefined || this._content == null
   }
@@ -551,6 +560,8 @@ export const prim_annot_to_mich_type = (
   }
 }
 
+export const unit_mich : Micheline = { prim : "Unit" }
+
 export const string_to_mich = (v : string) : Micheline => {
   return { "string" : v }
 }
@@ -611,6 +622,22 @@ export const option_annot_to_mich_type = (mt : MichelineType, a : Array<string>)
 
 export const list_to_mich = <T>(l : Array<T>, to_mich : { (a : T) : Micheline }) : Micheline => {
   return l.map(x => to_mich(x))
+}
+
+export const list_to_mich_type = (mt : MichelineType) : MichelineType => {
+  return {
+    prim: "list",
+    args: [ mt ],
+    annots : []
+  }
+}
+
+export const list_annot_to_mich_type = (mt : MichelineType, a : Array<string>) : MichelineType => {
+  return {
+    prim: "list",
+    args: [ mt ],
+    annots : a
+  }
 }
 
 export const set_to_mich = <T>(s : Set<T>, to_json : { (a : T) : Micheline }) => {
