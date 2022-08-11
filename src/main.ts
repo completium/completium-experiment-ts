@@ -355,6 +355,7 @@ type optionArg =
 | Nat
 | Rational
 | Tez
+| Array<optionArg>
 | Option<any>
 
 export class Option<T extends optionArg> implements ArchetypeType {
@@ -390,6 +391,8 @@ export class Option<T extends optionArg> implements ArchetypeType {
         if (this._content instanceof Date) {
           const d = this._content as Date
           mich = date_to_mich(d)
+        } else if (this._content instanceof Array) {
+          mich = list_to_mich(this._content, x => x.to_mich())
         } else {
           mich = this._content.to_mich();
         }
