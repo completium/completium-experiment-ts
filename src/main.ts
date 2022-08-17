@@ -746,4 +746,8 @@ export const mich_to_map = <K, V>(x : Micheline, f: { (k : Micheline, v : Michel
   })
 }
 
+export const cmp_date = (a : Date , b : Date) : boolean => {
+  return (a.getTime() - a.getMilliseconds()) == (b.getTime() - b.getMilliseconds())
+}
+
 /* TODO complete getter interface */
