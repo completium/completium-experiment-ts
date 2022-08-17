@@ -438,7 +438,7 @@ export const set_quiet = (b : boolean) => {
 }
 
 export const set_mockup_now = (d : Date) => {
-  Completium.setMockupNow(Math.floor(d.getTime() / 1000))
+  Completium.setMockupNow(Math.floor(d.getTime() / 1000 - 1))
 }
 
 export const get_account = (name : string) : Account => {
