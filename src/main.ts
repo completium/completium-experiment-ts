@@ -465,8 +465,13 @@ export const pack = (obj : Micheline, typ ?: MichelineType) => {
  * @param error error that f is expected to thow
  */
 export const expect_to_fail = async (f : { () : Promise<void> }, error : Micheline) => {
-  const err = (error as Mstring)["string"] /* TODO: manage other error type */
-  await Completium.expectToThrow(f, err)
+  const str_err = (error as Mstring)["string"] /* TODO: manage other error type */
+  if (str_err === undefined) {
+    const pair_err = (error as Mpair)
+    await Completium.expectToThrow(f, JSON.stringify(pair_err, null, 2))
+  } else {
+    await Completium.expectToThrow(f, str_err)
+  }
 }
 
 /**
