@@ -468,7 +468,7 @@ export const expect_to_fail = async (f : { () : Promise<void> }, error : Micheli
   const str_err = (error as Mstring)["string"] /* TODO: manage other error type */
   if (str_err === undefined) {
     const pair_err = (error as Mpair)
-    await Completium.expectToThrow(f, JSON.stringify(pair_err, null, 2))
+    await Completium.expectToThrow(f, Completium.jsonMichelineToExpr(pair_err))
   } else {
     await Completium.expectToThrow(f, str_err)
   }
