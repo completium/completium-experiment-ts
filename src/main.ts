@@ -289,6 +289,44 @@ export class Bytes implements ArchetypeType {
   }
 }
 
+export class Signature implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : Signature) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class Key implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : Key) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
 export class Tez implements ArchetypeType {
   private _content : BigNumber
   constructor(v : string | number | BigNumber, unit : "tez" | "mutez" = "tez") {
@@ -364,6 +402,8 @@ type optionArg =
 | Nat
 | Rational
 | Tez
+| Signature
+| Key
 | Array<optionArg>
 | Option<any>
 
@@ -705,6 +745,14 @@ export const mich_to_int = (x : Micheline) : Int => {
 
 export const mich_to_nat = (x : Micheline) : Nat => {
   return new Nat((x as Mint)["int"])
+}
+
+export const mich_to_signature = (x : Micheline) : Signature => {
+  return new Signature((x as Mstring)["string"])
+}
+
+export const mich_to_key = (x : Micheline) : Key => {
+  return new Key((x as Mstring)["string"])
 }
 
 export const mich_to_tez = (x : Micheline) : Tez => {
