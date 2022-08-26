@@ -306,7 +306,7 @@ export class Signature implements ArchetypeType {
   }
   to_mich(): Micheline {
       return {
-        "bytes" : this._content
+        "string" : this._content
       }
   }
   equals = (x : Signature) : boolean => {
@@ -325,7 +325,7 @@ export class Key implements ArchetypeType {
   }
   to_mich(): Micheline {
       return {
-        "bytes" : this._content
+        "string" : this._content
       }
   }
   equals = (x : Key) : boolean => {
