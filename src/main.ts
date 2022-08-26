@@ -534,9 +534,9 @@ export const get_big_map_value = async (big_map_id: bigint, key_value : Michelin
   return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type)
 }
 
-export const sign = async (v : string, a : Account) : Promise<string> => {
+export const sign = async (v : string, a : Account) : Promise<Signature> => {
   const signed = await Completium.sign(v, { as: a.name })
-  return signed.prefixSig
+  return new Signature(signed.prefixSig)
 }
 
 /**
