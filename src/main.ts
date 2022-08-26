@@ -105,6 +105,15 @@ export class Account {
   get_address = () : Address => {
     return new Address(this.pkh)
   }
+  get_key = () : Key => {
+    return new Key(this.pubk)
+  }
+  get_secret_key = () => {
+    return this.sk
+  }
+  get_name = () => {
+    return this.name
+  }
 }
 
 export interface Parameters {
