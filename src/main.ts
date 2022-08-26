@@ -91,16 +91,25 @@ export type MichelineType =
 
 /* Interfaces -------------------------------------------------------------- */
 
-export interface Account {
-  name : string,
-  pubk : string,
-  pkh  : string,
-  sk   : string,
+export class Account {
+  name : string;
+  pubk : string;
+  pkh  : string;
+  sk   : string;
+  constructor(n : string, k : string, h : string, s : string) {
+    this.name = n
+    this.pubk = k
+    this.pkh  = h
+    this.sk   = s
+  }
+  get_address = () : Address => {
+    return new Address(this.pkh)
+  }
 }
 
 export interface Parameters {
   as     : Account,
-  amount : bigint
+  amount : Tez
 }
 
 /* Archetype value */
@@ -302,10 +311,10 @@ export class Tez implements ArchetypeType {
     return this._content
   }
   plus(x : Tez) : Tez {
-    return new Tez(this._content.plus(x.to_big_number()))
+    return new Tez(this._content.plus(x.to_big_number()), "mutez")
   }
   times(x : Nat) : Tez {
-    return new Tez(this._content.times(x.to_big_number()))
+    return new Tez(this._content.times(x.to_big_number()), "mutez")
   }
   equals = (x : Tez) : boolean => {
     return this._content.isEqualTo(x.to_big_number())
@@ -443,12 +452,7 @@ export const set_mockup_now = (d : Date) => {
 
 export const get_account = (name : string) : Account => {
   const a = Completium.getAccount(name)
-  return {
-    name : a.name,
-    pubk : a.pubk,
-    pkh  : a.pkh,
-    sk   : a.sk
-  }
+  return new Account(a.name, a.pubk, a.pkh, a.sk)
 }
 
 export const pack = (obj : Micheline, typ ?: MichelineType) => {
@@ -457,6 +461,11 @@ export const pack = (obj : Micheline, typ ?: MichelineType) => {
   } else {
     return Completium.pack(obj)
   }
+}
+
+export const get_balance = async (addr : Address) : Promise<Tez> => {
+  const b = await Completium.getBalance(addr.toString())
+  return new Tez(b, "mutez")
 }
 
 /**
