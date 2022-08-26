@@ -105,7 +105,7 @@ export class Account {
   get_address = () : Address => {
     return new Address(this.pkh)
   }
-  get_key = () : Key => {
+  get_public_key = () : Key => {
     return new Key(this.pubk)
   }
   get_secret_key = () => {
@@ -374,8 +374,8 @@ export class Tez implements ArchetypeType {
 export class Entrypoint {
   addr : string
   name : string
-  constructor(a : string, n : string) {
-    this.addr = a
+  constructor(a : Address, n : string) {
+    this.addr = a.toString()
     this.name = n
   }
   to_mich = () : Micheline => {
@@ -389,11 +389,11 @@ export class Entrypoint {
   }
 }
 
-const none_mich : Micheline = {
+export const none_mich : Micheline = {
   "prim": "None"
 }
 
-const some_to_mich = (a : Micheline) : Micheline => {
+export const some_to_mich = (a : Micheline) : Micheline => {
   return {
     prim: "Some",
     args: [ a ]
