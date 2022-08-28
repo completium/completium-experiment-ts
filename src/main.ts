@@ -653,6 +653,28 @@ export const elt_to_mich = (a : Micheline, b : Micheline) : Micheline => {
   }
 }
 
+export const left_to_mich = (v : Micheline) : Micheline => {
+  return {
+    prim: "Left",
+    args: [v]
+  }
+}
+
+export const right_to_mich = (v : Micheline) : Micheline => {
+  return {
+    prim: "Right",
+    args: [v]
+  }
+}
+
+export const or_to_mich_type = (l : MichelineType, r : MichelineType) : MichelineType => {
+  return {
+    prim: "or",
+    args: [l, r],
+    annots: []
+  }
+}
+
 export const pair_to_mich = (l : Array<Micheline>) : Micheline => {
   return {
     prim: "Pair",
