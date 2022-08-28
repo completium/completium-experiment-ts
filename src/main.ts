@@ -392,7 +392,7 @@ export class Entrypoint {
 export abstract class Enum<T> {
   constructor(private _kind : T) {}
   type() { return this._kind }
-  //abstract to_mich() : Micheline
+  abstract to_mich() : Micheline
 }
 
 export const none_mich : Micheline = {
