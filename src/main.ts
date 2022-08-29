@@ -849,4 +849,10 @@ export const cmp_date = (a : Date , b : Date) : boolean => {
   return (a.getTime() - a.getMilliseconds()) == (b.getTime() - b.getMilliseconds())
 }
 
-/* TODO complete getter interface */
+export const exec_getter = async (c : string, e : string, a : Micheline, p : Partial<Parameters>) => {
+  return await Completium.runGetter(e, c, {
+      argJsonMichelson: a,
+      as: p.as ? p.as.pkh : undefined,
+      amount: p.amount ? p.amount.toString()+"utz" : undefined
+   })
+}
