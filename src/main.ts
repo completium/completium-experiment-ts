@@ -597,6 +597,15 @@ export const call = async (c : string, e : string, a : Micheline, p : Partial<Pa
    })
 }
 
+export const exec_getter = async (c : string, e : string, a : Micheline, p : Partial<Parameters>) => {
+  return await Completium.runGetter(e, c, {
+      argJsonMichelson: a,
+      as: p.as ? p.as.pkh : undefined,
+      amount: p.amount ? p.amount.toString()+"utz" : undefined,
+      json : true
+   })
+}
+
 /**
  * Transfers tez
  * @param from account to transfer from
@@ -847,12 +856,4 @@ export const mich_to_map = <K, V>(x : Micheline, f: { (k : Micheline, v : Michel
 
 export const cmp_date = (a : Date , b : Date) : boolean => {
   return (a.getTime() - a.getMilliseconds()) == (b.getTime() - b.getMilliseconds())
-}
-
-export const exec_getter = async (c : string, e : string, a : Micheline, p : Partial<Parameters>) => {
-  return await Completium.runGetter(e, c, {
-      argJsonMichelson: a,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined
-   })
 }
