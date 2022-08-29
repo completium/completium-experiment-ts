@@ -854,6 +854,18 @@ export const mich_to_map = <K, V>(x : Micheline, f: { (k : Micheline, v : Michel
   })
 }
 
+export const is_left =  (x : Micheline) : boolean => {
+  return (x as Msingle)["prim"] == "Left"
+}
+
+export const is_right =  (x : Micheline) : boolean => {
+  return (x as Msingle)["prim"] == "Right"
+}
+
+export const mich_to_or_value = (x : Micheline) : Micheline => {
+  return (x as Msingle)["args"][0]
+}
+
 export const cmp_date = (a : Date , b : Date) : boolean => {
   return (a.getTime() - a.getMilliseconds()) == (b.getTime() - b.getMilliseconds())
 }
