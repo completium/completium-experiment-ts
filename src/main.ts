@@ -123,7 +123,7 @@ export interface Parameters {
 
 /* Archetype value */
 
-abstract class ArchetypeType {
+export abstract class ArchetypeType {
   abstract equals : (v : this) => boolean
   abstract to_mich() : Micheline
   abstract toString() : string
@@ -371,7 +371,7 @@ export class Tez implements ArchetypeType {
   }
 }
 
-export class Entrypoint {
+export class Entrypoint implements ArchetypeType {
   addr : string
   name : string
   constructor(a : Address, n : string) {
@@ -389,10 +389,12 @@ export class Entrypoint {
   }
 }
 
-export abstract class Enum<T> {
+export abstract class Enum<T> implements ArchetypeType {
   constructor(private _kind : T) {}
   type() { return this._kind }
   abstract to_mich() : Micheline
+  abstract toString(): string
+  abstract equals(v : Enum<T>) : boolean
 }
 
 export const none_mich : Micheline = {
@@ -406,30 +408,13 @@ export const some_to_mich = (a : Micheline) : Micheline => {
   }
 }
 
-type optionArg =
-  boolean
-| string
-| Date
-| Bytes
-| Duration
-| Address
-| Int
-| Nat
-| Rational
-| Tez
-| Signature
-| Key
-| Array<optionArg>
-| Option<any>
-| Or<any, any>
-
-export class Option<T extends optionArg> implements ArchetypeType {
+export class Option<T extends ArchetypeType> implements ArchetypeType {
   _content : T | undefined | null
   constructor(v : T | undefined | null) {
     this._content = v
   }
-  static None = <T extends optionArg>() => { return new Option<T>(null) }
-  static Some = <T extends optionArg>(v : T) => { return new Option<T>(v) }
+  static None = <T extends ArchetypeType>() => { return new Option<T>(null) }
+  static Some = <T extends ArchetypeType>(v : T) => { return new Option<T>(v) }
   get = () : T => {
     if (this._content != undefined && this._content != null) {
       return this._content
@@ -492,15 +477,15 @@ export class Option<T extends optionArg> implements ArchetypeType {
   };
 }
 
-export class Or<T1 extends optionArg, T2 extends optionArg> implements ArchetypeType {
+export class Or<T1 extends ArchetypeType, T2 extends ArchetypeType> implements ArchetypeType {
   _content : T1 | T2
   _is_left : boolean
   constructor(v : T1 | T2, is_left : boolean) {
     this._content = v
     this._is_left = is_left
   }
-  static Left  = <T1 extends optionArg, T2 extends optionArg>(v : T1) => { return new Or<T1, T2>(v, true) }
-  static Right = <T1 extends optionArg, T2 extends optionArg>(v : T2) => { return new Or<T1, T2>(v, false) }
+  static Left  = <T1 extends ArchetypeType, T2 extends ArchetypeType>(v : T1) => { return new Or<T1, T2>(v, true) }
+  static Right = <T1 extends ArchetypeType, T2 extends ArchetypeType>(v : T2) => { return new Or<T1, T2>(v, false) }
   get = () : T1 | T2 => {
     if (this._content != undefined && this._content != null) {
       return this._content
@@ -898,7 +883,7 @@ export const mich_to_bool = (x : Micheline) : boolean => {
   }
 }
 
-export const mich_to_option = <T extends optionArg>(x : Micheline, mich_to : (_ : Micheline) => T) : Option<T> => {
+export const mich_to_option = <T extends ArchetypeType>(x : Micheline, mich_to : (_ : Micheline) => T) : Option<T> => {
   if ("prim" in x) {
     switch (x.prim) {
       case "None" : return new Option<T>(undefined)
@@ -908,7 +893,7 @@ export const mich_to_option = <T extends optionArg>(x : Micheline, mich_to : (_ 
   throw new Error("mich_to_option: prim not found")
 }
 
-export const mich_to_list = <T extends optionArg>(x : Micheline, mich_to: (_ : Micheline) => T) : Array<T> => {
+export const mich_to_list = <T>(x : Micheline, mich_to: (_ : Micheline) => T) : Array<T> => {
   const xlist = (x as Marray)
   return xlist.map(mich_to)
 }
