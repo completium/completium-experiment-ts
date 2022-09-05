@@ -421,6 +421,7 @@ type optionArg =
 | Key
 | Array<optionArg>
 | Option<any>
+| Or<any, any>
 
 export class Option<T extends optionArg> implements ArchetypeType {
   _content : T | undefined | null
@@ -489,6 +490,74 @@ export class Option<T extends optionArg> implements ArchetypeType {
       return "Some (" + str + ")"
     }
   };
+}
+
+export class Or<T1 extends optionArg, T2 extends optionArg> implements ArchetypeType {
+  _content : T1 | T2
+  _is_left : boolean
+  constructor(v : T1 | T2, is_left : boolean) {
+    this._content = v
+    this._is_left = is_left
+  }
+  static Left  = <T1 extends optionArg, T2 extends optionArg>(v : T1) => { return new Or<T1, T2>(v, true) }
+  static Right = <T1 extends optionArg, T2 extends optionArg>(v : T2) => { return new Or<T1, T2>(v, false) }
+  get = () : T1 | T2 => {
+    if (this._content != undefined && this._content != null) {
+      return this._content
+    } else {
+      throw new Error("Or.get : is not defined")
+    }
+  }
+  is_left() { return this._is_left }
+  is_right() { return !this.is_left }
+  to_mich() : Micheline {
+    let mich
+    switch (typeof this._content) {
+      case "string": mich = string_to_mich(this._content); break;
+      case "boolean": mich = bool_to_mich(this._content); break;
+      case "object":
+        // js hack ...
+        if (this._content instanceof Date) {
+          const d = this._content as Date
+          mich = date_to_mich(d)
+        } else if (this._content instanceof Array) {
+          mich = list_to_mich(this._content, x => x.to_mich())
+        } else {
+          mich = this._content.to_mich();
+        }
+        break
+      default: throw new Error("to_mich : unknown type")
+    }
+    if (this.is_left()) {
+      return left_to_mich(mich)
+    } else {
+      return right_to_mich(mich)
+    }
+  }
+  toString(): string {
+    let str : string
+    switch (typeof this._content) {
+      case "string": str = this._content; break;
+      case "boolean": str = "" + this._content; break;
+      case "object":
+        // js hack ...
+        if (this._content instanceof Date) {
+          const d = this._content as Date
+          str = d.toISOString()
+        } else {
+          str = this._content.toString()
+        }
+      default: str = this._content.toString()
+    }
+    if (this.is_left()) {
+      return "Left (" + str + ")"
+    } else {
+      return "Right (" + str + ")"
+    }
+  }
+  equals = (o : Or<T1, T2>) => {
+    return this.toString() == o.toString()
+  }
 }
 
 /* Experiment API ---------------------------------------------------------- */
@@ -642,6 +711,10 @@ export const prim_annot_to_mich_type = (
 }
 
 export const unit_mich : Micheline = { prim : "Unit" }
+
+export const unit_to_mich = () : Micheline => {
+  return unit_mich
+}
 
 export const string_to_mich = (v : string) : Micheline => {
   return { "string" : v }
