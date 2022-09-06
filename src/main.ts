@@ -124,7 +124,6 @@ export interface Parameters {
 /* Archetype value */
 
 export abstract class ArchetypeType {
-  abstract equals : (v : this) => boolean
   abstract to_mich() : Micheline
   abstract toString() : string
 }
@@ -394,7 +393,6 @@ export abstract class Enum<T> implements ArchetypeType {
   type() { return this._kind }
   abstract to_mich() : Micheline
   abstract toString(): string
-  abstract equals(v : Enum<T>) : boolean
 }
 
 export const none_mich : Micheline = {
@@ -408,13 +406,15 @@ export const some_to_mich = (a : Micheline) : Micheline => {
   }
 }
 
-export class Option<T extends ArchetypeType> implements ArchetypeType {
+type ArchetypeTypeArg = ArchetypeType | string | Date | boolean
+
+export class Option<T extends ArchetypeTypeArg | string | Date | boolean> implements ArchetypeType {
   _content : T | undefined | null
   constructor(v : T | undefined | null) {
     this._content = v
   }
-  static None = <T extends ArchetypeType>() => { return new Option<T>(null) }
-  static Some = <T extends ArchetypeType>(v : T) => { return new Option<T>(v) }
+  static None = <T extends ArchetypeTypeArg>() => { return new Option<T>(null) }
+  static Some = <T extends ArchetypeTypeArg>(v : T) => { return new Option<T>(v) }
   get = () : T => {
     if (this._content != undefined && this._content != null) {
       return this._content
@@ -477,15 +477,15 @@ export class Option<T extends ArchetypeType> implements ArchetypeType {
   };
 }
 
-export class Or<T1 extends ArchetypeType, T2 extends ArchetypeType> implements ArchetypeType {
+export class Or<T1 extends ArchetypeTypeArg, T2 extends ArchetypeTypeArg> implements ArchetypeType {
   _content : T1 | T2
   _is_left : boolean
   constructor(v : T1 | T2, is_left : boolean) {
     this._content = v
     this._is_left = is_left
   }
-  static Left  = <T1 extends ArchetypeType, T2 extends ArchetypeType>(v : T1) => { return new Or<T1, T2>(v, true) }
-  static Right = <T1 extends ArchetypeType, T2 extends ArchetypeType>(v : T2) => { return new Or<T1, T2>(v, false) }
+  static Left  = <T1 extends ArchetypeTypeArg, T2 extends ArchetypeTypeArg>(v : T1) => { return new Or<T1, T2>(v, true) }
+  static Right = <T1 extends ArchetypeTypeArg, T2 extends ArchetypeTypeArg>(v : T2) => { return new Or<T1, T2>(v, false) }
   get = () : T1 | T2 => {
     if (this._content != undefined && this._content != null) {
       return this._content
