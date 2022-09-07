@@ -564,11 +564,11 @@ export const get_account = (name : string) : Account => {
   return new Account(a.name, a.pubk, a.pkh, a.sk)
 }
 
-export const pack = (obj : Micheline, typ ?: MichelineType) => {
+export const pack = (obj : Micheline, typ ?: MichelineType) : Bytes => {
   if (typ != undefined) {
-    return Completium.packTyped(obj, typ)
+    return new Bytes(Completium.packTyped(obj, typ))
   } else {
-    return Completium.pack(obj)
+    return new Bytes(Completium.pack(obj))
   }
 }
 
@@ -603,8 +603,8 @@ export const get_big_map_value = async (big_map_id: bigint, key_value : Michelin
   return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type)
 }
 
-export const sign = async (v : string, a : Account) : Promise<Signature> => {
-  const signed = await Completium.sign(v, { as: a.name })
+export const sign = async (b : Bytes, a : Account) : Promise<Signature> => {
+  const signed = await Completium.sign(b.toString(), { as: a.name })
   return new Signature(signed.prefixSig)
 }
 
