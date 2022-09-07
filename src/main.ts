@@ -765,6 +765,17 @@ export const pair_array_to_mich_type = (l : Array<MichelineType>) : MichelineTyp
   }
 }
 
+export const mich_array_to_mich = (l : Array<Micheline>) : Micheline => {
+  if (l.length == 1) {
+    return l[0]
+  }
+  if (l.length == 2) {
+    return pair_to_mich(l)
+  } else {
+    return pair_to_mich([ l[0], mich_array_to_mich(l.slice(1))])
+  }
+}
+
 export const option_to_mich_type = (a : MichelineType) : MichelineType => {
   return {
     prim: "option",
