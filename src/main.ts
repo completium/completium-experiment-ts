@@ -572,6 +572,10 @@ export const pack = (obj : Micheline, typ ?: MichelineType) : Bytes => {
   }
 }
 
+export const blake2b = (b : Bytes) : Bytes => {
+  return new Bytes(Completium.blake2b(b.toString()))
+}
+
 export const get_balance = async (addr : Address) : Promise<Tez> => {
   const b = await Completium.getBalance(addr.toString())
   return new Tez(b, "mutez")
