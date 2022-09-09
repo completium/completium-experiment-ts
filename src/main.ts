@@ -587,13 +587,32 @@ export const get_balance = async (addr : Address) : Promise<Tez> => {
  * @param error error that f is expected to thow
  */
 export const expect_to_fail = async (f : { () : Promise<void> }, error : Micheline) => {
-  const str_err = (error as Mstring)["string"] /* TODO: manage other error type */
+  const str_error = JSON.stringify(error, null, 2)
+  const m = "Failed to throw " + str_error ;
+  try {
+    await f();
+    throw new Error(m)
+  } catch (ex : any) {
+    if (ex.value) {
+      const json = Completium.exprMichelineToJson(ex.value)
+      const str_value = JSON.stringify(json, null, 2)
+      if (str_value != str_error) {
+        throw new Error(`actual ${str_value} vs. expected ${str_error}`)
+      }
+    } else {
+      throw ex
+    }
+  }
+
+
+  let str_err = (error as Mstring)["string"] /* TODO: manage other error type */
   if (str_err === undefined) {
     const pair_err = (error as Mpair)
     await Completium.expectToThrow(f, Completium.jsonMichelineToExpr(pair_err).toString().replace(/\\"/gi, ''))
   } else {
     await Completium.expectToThrow(f, str_err)
   }
+
 }
 
 /**
@@ -607,8 +626,8 @@ export const get_big_map_value = async (big_map_id: bigint, key_value : Michelin
   return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type)
 }
 
-export const sign = async (b : Bytes, a : Address) : Promise<Signature> => {
-  const signed = await Completium.sign(b.toString(), { as: a.toString() })
+export const sign = async (b : Bytes, a : Account) : Promise<Signature> => {
+  const signed = await Completium.sign(b.toString(), { as: a.get_name() })
   return new Signature(signed.prefixSig)
 }
 
