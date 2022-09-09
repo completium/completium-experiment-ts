@@ -587,7 +587,7 @@ export const get_balance = async (addr : Address) : Promise<Tez> => {
  * @param error error that f is expected to thow
  */
 export const expect_to_fail = async (f : { () : Promise<void> }, error : Micheline) => {
-  const str_error = JSON.stringify(error, null, 2)
+  const str_error = JSON.stringify(error, null, 2).toString().replace(/\\"/gi, '')
   const m = "Failed to throw " + str_error ;
   try {
     await f();
@@ -603,16 +603,6 @@ export const expect_to_fail = async (f : { () : Promise<void> }, error : Micheli
       throw ex
     }
   }
-
-
-  let str_err = (error as Mstring)["string"] /* TODO: manage other error type */
-  if (str_err === undefined) {
-    const pair_err = (error as Mpair)
-    await Completium.expectToThrow(f, Completium.jsonMichelineToExpr(pair_err).toString().replace(/\\"/gi, ''))
-  } else {
-    await Completium.expectToThrow(f, str_err)
-  }
-
 }
 
 /**
