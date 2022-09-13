@@ -406,7 +406,7 @@ export const some_to_mich = (a : Micheline) : Micheline => {
   }
 }
 
-type ArchetypeTypeArg = ArchetypeType | string | Date | boolean
+type ArchetypeTypeArg = ArchetypeType | Array<ArchetypeTypeArg> | string | Date | boolean
 
 export class Option<T extends ArchetypeTypeArg | string | Date | boolean> implements ArchetypeType {
   _content : T | undefined | null
