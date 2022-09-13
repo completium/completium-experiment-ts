@@ -408,6 +408,24 @@ export const some_to_mich = (a : Micheline) : Micheline => {
 
 type ArchetypeTypeArg = ArchetypeType | Array<ArchetypeTypeArg> | string | Date | boolean
 
+const generic_to_mich = (x: any): Micheline => {
+  switch (typeof x) {
+    case "string": return string_to_mich(x);
+    case "boolean": return bool_to_mich(x);
+    case "object": {
+      if (x instanceof Date) {
+        const d = x as Date
+        return date_to_mich(d)
+      } else if (x instanceof Array) {
+        return list_to_mich(x, x => generic_to_mich(x))
+      } else {
+        return x.to_mich();
+      }
+    }
+    default: throw new Error("generic_to_mich : unknown type")
+  }
+}
+
 export class Option<T extends ArchetypeTypeArg | string | Date | boolean> implements ArchetypeType {
   _content : T | undefined | null
   constructor(v : T | undefined | null) {
@@ -432,23 +450,7 @@ export class Option<T extends ArchetypeTypeArg | string | Date | boolean> implem
     if (this._content == undefined || this._content == null) {
       return none_mich
     }
-    let mich
-    switch (typeof this._content) {
-      case "string": mich = string_to_mich(this._content); break;
-      case "boolean": mich = bool_to_mich(this._content); break;
-      case "object":
-        // js hack ...
-        if (this._content instanceof Date) {
-          const d = this._content as Date
-          mich = date_to_mich(d)
-        } else if (this._content instanceof Array) {
-          mich = list_to_mich(this._content, x => x.to_mich())
-        } else {
-          mich = this._content.to_mich();
-        }
-        break
-      default: throw new Error("to_mich : unknown type")
-    }
+    const mich = generic_to_mich(this._content)
     return some_to_mich(mich)
   };
   equals = (o : Option<T>) => {
@@ -496,23 +498,7 @@ export class Or<T1 extends ArchetypeTypeArg, T2 extends ArchetypeTypeArg> implem
   is_left() { return this._is_left }
   is_right() { return !this.is_left }
   to_mich() : Micheline {
-    let mich
-    switch (typeof this._content) {
-      case "string": mich = string_to_mich(this._content); break;
-      case "boolean": mich = bool_to_mich(this._content); break;
-      case "object":
-        // js hack ...
-        if (this._content instanceof Date) {
-          const d = this._content as Date
-          mich = date_to_mich(d)
-        } else if (this._content instanceof Array) {
-          mich = list_to_mich(this._content, x => x.to_mich())
-        } else {
-          mich = this._content.to_mich();
-        }
-        break
-      default: throw new Error("to_mich : unknown type")
-    }
+    const mich = generic_to_mich(this._content)
     if (this.is_left()) {
       return left_to_mich(mich)
     } else {
