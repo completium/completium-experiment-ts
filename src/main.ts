@@ -581,6 +581,18 @@ export const get_balance = async (addr : Address) : Promise<Tez> => {
   return new Tez(b, "mutez")
 }
 
+export const list_equals = <T>(l1 : Array<T>, l2 : Array<T>, cmp : { (e1 : T, e2 : T) : boolean }) : boolean => {
+  if (l1.length == l2.length) {
+    for (let i = 0; i < l1.length; i++) {
+      if (! cmp(l1[i], l2[i])) {
+        return false
+      }
+    }
+    return true
+  }
+  return false
+}
+
 /**
  * Expects f to fail with error
  * @param f async call to execute
