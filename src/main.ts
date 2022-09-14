@@ -662,11 +662,20 @@ export const call = async (c : string, e : string, a : Micheline, p : Partial<Pa
    })
 }
 
-export const exec_getter = async (c : string, e : string, a : Micheline, p : Partial<Parameters>) => {
-  return await Completium.runGetter(e, c, {
-      argJsonMichelson: a,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined,
+export const exec_getter = async (contract : Address, entry : string, arg : Micheline, param : Partial<Parameters>) => {
+  return await Completium.runGetter(entry, contract.toString(), {
+      argJsonMichelson: arg,
+      as: param.as ? param.as.pkh : undefined,
+      amount: param.amount ? param.amount.toString() + "utz" : undefined,
+      json : true
+   })
+}
+
+export const exec_view = async (contract : Address, view : string, arg : Micheline, param : Partial<Parameters>) => {
+  return await Completium.runView(view, contract.toString(), {
+      argJsonMichelson: arg,
+      as: param.as ? param.as.pkh : undefined,
+      amount: param.amount ? param.amount.toString() + "utz" : undefined,
       json : true
    })
 }
