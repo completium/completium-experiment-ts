@@ -196,7 +196,7 @@ export class Int implements ArchetypeType {
     return this._content.isEqualTo(x.to_big_number())
   }
   toString() : string {
-    return this._content.toString()
+    return this._content.toFixed()
   }
 }
 
@@ -230,7 +230,7 @@ export class Nat implements ArchetypeType {
     return this._content.isEqualTo(x.to_big_number())
   }
   toString = () => {
-    return this._content.toString()
+    return this._content.toFixed()
   }
 }
 
@@ -274,7 +274,7 @@ export class Rational implements ArchetypeType {
     return this._content.isEqualTo(x.to_big_number())
   }
   toString = () : string => {
-    return this._content.toString()
+    return this._content.toFixed()
   }
 }
 
@@ -638,7 +638,7 @@ export const get_storage = async (c : string) : Promise<any> => {
 export const deploy = async (path : string, params : any, p : Partial<Parameters>) : Promise<string> => {
   const [contract, _] = await Completium.deploy(
     path, {
-      parameters: params ,
+      parametersMicheline: params ,
       as: params.as,
       amount: params.amount ? params.amount.toString()+"utz" : undefined
     }
