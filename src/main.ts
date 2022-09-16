@@ -294,17 +294,6 @@ export class Rational implements ArchetypeType {
     return this._content.toFixed()
   }
 }
-//console.log(new Rational("5").toString())
-//console.log(new Rational(5).toString())
-//console.log(new Rational(5.4464).toString())
-//console.log(new Rational("5.4464").toString())
-//console.log(new Rational("5.4464%").toString())
-//console.log(new Rational("5").toString())
-//console.log(new Rational(5).to_mich())
-//console.log(new Rational(5.4464).to_mich())
-//console.log(new Rational("5.4464").to_mich())
-//console.log(new Rational("5.4464%").to_mich())
-//console.log(new Rational("99999999999999999999999956456456456999999999", new BigNumber("999999999999956456456456999999999")).to_mich())
 
 export class Bytes implements ArchetypeType {
   private _content : string
