@@ -1,6 +1,6 @@
 {
   "name": "@completium/experiment-ts",
-  "version": "0.0.67",
+  "version": "0.0.68",
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "npm test",
+    "exec": "rm -rf ./build && npx tsc --outDir build && node ./build/src/main.js",
     "build": "rm -rf ./build && npx tsc --outDir build"
   },
   "repository": {
@@ -31,7 +32,7 @@
   },
   "homepage": "https://github.com/completium/completium-experiment-ts#readme",
   "dependencies": {
-    "@completium/completium-cli": "^0.4.4",
+    "@completium/completium-cli": "^0.4.20",
     "bignumber.js": "^9.0.2"
   },
   "devDependencies": {

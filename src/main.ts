@@ -114,6 +114,12 @@ export class Account {
   get_name = () => {
     return this.name
   }
+  get_balance = async () => {
+    return await get_balance(this.get_address())
+  }
+  sign = async (value : Bytes) => {
+    return await sign(value, this)
+  }
 }
 
 export interface Parameters {
@@ -175,7 +181,7 @@ export class Int implements ArchetypeType {
     }
   }
   to_mich = () : Micheline => {
-    return { "int" : this._content.toString() }
+    return { "int" : this._content.toFixed() }
   }
   to_big_number() : BigNumber {
     return this._content
@@ -209,7 +215,7 @@ export class Nat implements ArchetypeType {
     }
   }
   to_mich = () : Micheline => {
-    return { "int" : this._content.toString() }
+    return { "int" : this._content.toFixed() }
   }
   to_big_number() : BigNumber {
     return this._content
@@ -237,15 +243,26 @@ export class Nat implements ArchetypeType {
 export class Rational implements ArchetypeType {
   private _content : BigNumber
   constructor(v : string | number | BigNumber, denom : BigNumber = new BigNumber(1)) {
-    this._content = (new BigNumber(v)).div(denom)
+    let numerator : string | number | BigNumber = v
+    switch (typeof v) {
+      case "string":
+        const parsed = v.endsWith('%') ? parseFloat(v) / 100 : v
+        if (null !== parsed && ! Number.isNaN(parsed) ) {
+          numerator = parsed
+        } else {
+          throw new Error("Rational error: '" + v + "' not a number")
+        }; break;
+      default : {}
+    }
+    this._content = (new BigNumber(numerator)).div(denom)
   }
   to_mich = () : Micheline => {
     const [ num, denom ] = this._content.toFraction()
     return {
       prim: "Pair",
       args: [
-        { "int" : num.toString() },
-        { "int" : denom.toString() }
+        { "int" : num.toFixed() },
+        { "int" : denom.toFixed() }
       ]
     }
   }
@@ -277,6 +294,17 @@ export class Rational implements ArchetypeType {
     return this._content.toFixed()
   }
 }
+//console.log(new Rational("5").toString())
+//console.log(new Rational(5).toString())
+//console.log(new Rational(5.4464).toString())
+//console.log(new Rational("5.4464").toString())
+//console.log(new Rational("5.4464%").toString())
+//console.log(new Rational("5").toString())
+//console.log(new Rational(5).to_mich())
+//console.log(new Rational(5.4464).to_mich())
+//console.log(new Rational("5.4464").to_mich())
+//console.log(new Rational("5.4464%").to_mich())
+//console.log(new Rational("99999999999999999999999956456456456999999999", new BigNumber("999999999999956456456456999999999")).to_mich())
 
 export class Bytes implements ArchetypeType {
   private _content : string
