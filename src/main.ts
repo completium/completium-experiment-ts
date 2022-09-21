@@ -684,7 +684,7 @@ export const exec_getter = async (contract : Address, entry : string, arg : Mich
       argJsonMichelson: arg,
       as: param.as ? param.as.pkh : undefined,
       amount: param.amount ? param.amount.toString() + "utz" : undefined,
-      json : true
+      json : true,
    })
 }
 
@@ -693,7 +693,8 @@ export const exec_view = async (contract : Address, view : string, arg : Micheli
       argJsonMichelson: arg,
       as: param.as ? param.as.pkh : undefined,
       amount: param.amount ? param.amount.toString() + "utz" : undefined,
-      json : true
+      json : true,
+      taquito_schema : true
    })
 }
 
