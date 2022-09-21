@@ -2,10 +2,13 @@ import BigNumber from 'bignumber.js';
 import { Nat, Rational } from '../src/main'
 
 describe('ArchetypeType', () => {
+  describe('Address', () => {
+  });
+
   describe('Nat', () => {
     describe('Constructor', () => {
       test('Fails if neg number', () => {
-        expect(() => {new Nat(-5)}).toThrow("Not an Nat value: -5")
+        expect(() => { new Nat(-5) }).toThrow("Not an Nat value: -5")
       });
     });
 
