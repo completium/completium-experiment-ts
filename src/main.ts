@@ -548,6 +548,193 @@ export class Or<T1 extends ArchetypeTypeArg, T2 extends ArchetypeTypeArg> implem
   }
 }
 
+export class Bls12381Fr implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : ChestKey) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class Bls12381G1 implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : ChestKey) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class Bls12381G2 implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : ChestKey) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class ChainId implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "string" : this._content
+      }
+  }
+  equals = (x : ChainId) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class Chest implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : Chest) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class ChestKey implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : ChestKey) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class KeyHash implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "string" : this._content
+      }
+  }
+  equals = (x : KeyHash) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class SaplingState implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : SaplingState) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class SaplingTransaction implements ArchetypeType {
+  private _content : string
+  constructor(v : string) {
+    /* TODO check value validity */
+    this._content = v
+  }
+  to_mich(): Micheline {
+      return {
+        "bytes" : this._content
+      }
+  }
+  equals = (x : SaplingTransaction) : boolean => {
+    return this._content == x.toString()
+  }
+  toString = () : string => {
+    return this._content
+  }
+}
+
+export class Unit implements ArchetypeType {
+  constructor() {
+  }
+  to_mich(): Micheline {
+      return {
+        "prim" : "Unit"
+      }
+  }
+  equals = (x : Unit) : boolean => {
+    return true
+  }
+  toString = () : string => {
+    return "Unit"
+  }
+}
+
 /* Experiment API ---------------------------------------------------------- */
 
 export const set_mockup = () => {
@@ -930,6 +1117,46 @@ export const mich_to_bool = (x : Micheline) : boolean => {
     case "True"  : return true
     default : throw new Error("mich_to_bool: invalid prim '" + (x as Mprim).prim + "'")
   }
+}
+
+export const mich_to_bls12_381_fr = (x : Micheline) : Bls12381Fr => {
+  return new Bls12381Fr((x as Mbytes)["bytes"])
+}
+
+export const mich_to_bls12_381_g1 = (x : Micheline) : Bls12381G1 => {
+  return new Bls12381G1((x as Mbytes)["bytes"])
+}
+
+export const mich_to_bls12_381_g2 = (x : Micheline) : Bls12381G2 => {
+  return new Bls12381G2((x as Mbytes)["bytes"])
+}
+
+export const mich_to_chain_id = (x : Micheline) : ChainId => {
+  return new ChainId((x as Mstring)["string"])
+}
+
+export const mich_to_chest = (x : Micheline) : Chest => {
+  return new Chest((x as Mbytes)["bytes"])
+}
+
+export const mich_to_chest_key = (x : Micheline) : ChestKey => {
+  return new ChestKey((x as Mbytes)["bytes"])
+}
+
+export const mich_to_key_hash = (x : Micheline) : KeyHash => {
+  return new KeyHash((x as Mbytes)["bytes"])
+}
+
+export const mich_to_sapling_state = (x : Micheline) : SaplingState => {
+  return new SaplingState((x as Mbytes)["bytes"])
+}
+
+export const mich_to_sapling_transaction = (x : Micheline) : SaplingTransaction => {
+  return new SaplingTransaction((x as Mbytes)["bytes"])
+}
+
+export const mich_to_unit = (x : Micheline) : Unit => {
+  return new Unit()
 }
 
 export const mich_to_option = <T extends ArchetypeType>(x : Micheline, mich_to : (_ : Micheline) => T) : Option<T> => {
