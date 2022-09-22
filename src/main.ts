@@ -1213,7 +1213,7 @@ export const mich_to_unit = (x : Micheline) : Unit => {
   return new Unit()
 }
 
-export const mich_to_option = <T extends ArchetypeType>(x : Micheline, mich_to : (_ : Micheline) => T) : Option<T> => {
+export const mich_to_option = <T extends ArchetypeTypeArg>(x : Micheline, mich_to : (_ : any) => T) : Option<T> => {
   if ("prim" in x) {
     switch (x.prim) {
       case "None" : return new Option<T>(undefined)
