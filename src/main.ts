@@ -861,6 +861,57 @@ export const deploy_from_json = async (name : string, code : any, storage : Mich
   return contract.address
 }
 
+export const deploy_callback = async (name: string, mt : MichelineType) : Promise<string> => {
+  return await deploy_from_json(name + "_callback", [
+    {
+      "prim": "storage",
+      "args": [
+        {
+          "prim": "option",
+          "args": [
+            mt
+          ]
+        }
+      ]
+    },
+    {
+      "prim": "parameter",
+      "args": [
+        {
+          "prim": "timestamp",
+          "annots": [
+            "%callback"
+          ]
+        }
+      ]
+    },
+    {
+      "prim": "code",
+      "args": [
+        [
+          {
+            "prim": "CAR"
+          },
+          {
+            "prim": "SOME"
+          },
+          {
+            "prim": "NIL",
+            "args": [
+              {
+                "prim": "operation"
+              }
+            ]
+          },
+          {
+            "prim": "PAIR"
+          }
+        ]
+      ]
+    }
+  ], { prim : "None" })
+}
+
 /**
  * Calls a contract entrypoint
  * @param c contract address
