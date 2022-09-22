@@ -850,6 +850,17 @@ export const deploy = async (path : string, params : any, p : Partial<Parameters
   return contract.address
 }
 
+export const deploy_from_json = async (name : string, code : any, storage : Micheline) : Promise<string> => {
+  const [contract, _] = await Completium.originate(
+    null, {
+      named : name,
+      contract_json : code,
+      storage_json : storage
+    }
+  )
+  return contract.address
+}
+
 /**
  * Calls a contract entrypoint
  * @param c contract address
