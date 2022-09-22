@@ -383,7 +383,7 @@ export class Tez implements ArchetypeType {
     return this._content.isEqualTo(x.to_big_number())
   }
   toString = () : string => {
-    return this._content.toString()
+    return this._content.toFixed()
   }
 }
 
@@ -864,6 +864,49 @@ export const call = async (c : string, e : string, a : Micheline, p : Partial<Pa
       as: p.as ? p.as.pkh : undefined,
       amount: p.amount ? p.amount.toString()+"utz" : undefined
    })
+}
+
+export interface CallParameter {
+  destination : Address,
+  amount      : Tez,
+  fee        ?: Tez,
+  entrypoint  : string,
+  arg         : Micheline
+}
+
+export const get_call_param = async (c : string, e : string, a : Micheline, p : Partial<Parameters>) : Promise<CallParameter> => {
+  const param = await Completium.call(c, {
+      entry: e,
+      argJsonMichelson: a,
+      as: p.as ? p.as.pkh : undefined,
+      amount: p.amount ? p.amount.toString()+"utz" : undefined,
+      only_param : true
+   })
+   return {
+    destination : new Address(param.to),
+    amount      : new Tez(param.amount),
+    fee         : param.fee ? new Tez(param.fee) : undefined,
+    entrypoint  : param.parameter.entrypoint,
+    arg         : param.parameter.value
+   }
+}
+
+export const exec_batch = async (cps : CallParameter[], p : Partial<Parameters>) => {
+  return await Completium.exec_batch(cps.map(x => {
+    return {
+      kind : "transaction",
+      to   : x.destination.toString(),
+      amount : x.amount.toString(),
+      mutez : true,
+      fee : x.fee?.toString(),
+      parameter : {
+        entrypoint : x.entrypoint,
+        value : x.arg
+      }
+    }
+  }), {
+    as: p.as ? p.as.pkh : undefined
+  })
 }
 
 export const exec_getter = async (contract : Address, entry : string, arg : Micheline, param : Partial<Parameters>) => {
