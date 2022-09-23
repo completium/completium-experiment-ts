@@ -912,6 +912,16 @@ export const deploy_callback = async (name: string, mt : MichelineType) : Promis
   ], { prim : "None" })
 }
 
+export const getter_args_to_mich = (arg : Micheline, callback : Entrypoint) : Micheline => {
+  return pair_to_mich([arg, callback.to_mich()]);
+}
+
+export const get_callback_value = async <T extends ArchetypeTypeArg>(callback_addr : string, mich_to : (_ : any) => T) : Promise<T> => {
+  const mich = await get_storage(callback_addr)
+  //const option = mich_to_option<T>(mich, mich_to)
+  return mich_to(mich)
+}
+
 /**
  * Calls a contract entrypoint
  * @param c contract address
