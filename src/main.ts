@@ -877,12 +877,7 @@ export const deploy_callback = async (name: string, mt : MichelineType) : Promis
     {
       "prim": "parameter",
       "args": [
-        {
-          "prim": "timestamp",
-          "annots": [
-            "%callback"
-          ]
-        }
+        { ...mt, annots:["%callback"] }
       ]
     },
     {
