@@ -867,9 +867,9 @@ export const deploy_callback = async (name: string, mt : MichelineType) : Promis
       "prim": "storage",
       "args": [
         {
-          "prim": "option",
-          "args": [
-            mt
+              "prim": "option",
+              "args": [
+                mt
           ]
         }
       ]
@@ -1092,11 +1092,11 @@ export const pair_to_mich_type = (prim: "big_map" | "lambda" | "map" | "or", a :
   }
 }
 
-export const pair_array_to_mich_type = (l : Array<MichelineType>) : MichelineType => {
+export const pair_array_to_mich_type = (l : Array<MichelineType>, annots : Array<string> = []) : MichelineType => {
   return {
     prim: "pair",
     args: l,
-    annots: []
+    annots: annots
   }
 }
 
