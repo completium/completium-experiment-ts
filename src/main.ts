@@ -1069,11 +1069,11 @@ export const right_to_mich = (v : Micheline) : Micheline => {
   }
 }
 
-export const or_to_mich_type = (l : MichelineType, r : MichelineType) : MichelineType => {
+export const or_to_mich_type = (l : MichelineType, r : MichelineType, a : string[] = []) : MichelineType => {
   return {
     prim: "or",
     args: [l, r],
-    annots: []
+    annots: a
   }
 }
 
