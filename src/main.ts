@@ -45,6 +45,16 @@ export const set_mockup = () => {
   Completium.setEndpoint('mockup');
 }
 
+export const get_endpoint = () : string => {
+  const res : string = Completium.getEndpoint();
+  return res;
+}
+
+export const is_mockup = () : boolean => {
+  const res : boolean = Completium.isMockup();
+  return res;
+}
+
 export const set_quiet = (b : boolean) => {
   Completium.setQuiet(b)
 }
