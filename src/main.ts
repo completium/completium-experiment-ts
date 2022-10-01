@@ -26,7 +26,7 @@ export class Account {
   get_name = () => {
     return this.name
   }
-  get_balance = async () => {
+  get_balance = async () : Promise<att.Tez> => {
     return await get_balance(this.get_address())
   }
   sign = async (value : att.Bytes) => {
