@@ -41,13 +41,17 @@ export interface Parameters {
 
 /* Experiment API ---------------------------------------------------------- */
 
-export const set_mockup = () => {
-  Completium.setEndpoint('mockup');
+export const set_endpoint = (endpoint : string) => {
+  Completium.setEndpoint(endpoint);
 }
 
 export const get_endpoint = () : string => {
   const res : string = Completium.getEndpoint();
   return res;
+}
+
+export const set_mockup = () => {
+  Completium.setEndpoint('mockup');
 }
 
 export const is_mockup = () : boolean => {
