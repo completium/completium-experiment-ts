@@ -149,9 +149,20 @@ export const get_storage = async (c : string) : Promise<any> => {
 export const deploy = async (path : string, params : any, p : Partial<Parameters>) : Promise<string> => {
   const [contract, _] = await Completium.deploy(
     path, {
-      parametersMicheline: params ,
-      as: params.as,
-      amount: params.amount ? params.amount.toString()+"utz" : undefined
+      parametersMicheline: params,
+      as: p.as ? p.as.pkh : undefined,
+      amount: p.amount ? p.amount.toString()+"utz" : undefined
+    }
+  )
+  return contract.address
+}
+
+export const originate = async (path : string, storage : att.Micheline, p : Partial<Parameters>) : Promise<string> => {
+  const [contract, _] = await Completium.originate(
+    path, {
+      storage_json : storage,
+      as: p.as ? p.as.pkh : undefined,
+      amount: p.amount ? p.amount.toString()+"utz" : undefined
     }
   )
   return contract.address
