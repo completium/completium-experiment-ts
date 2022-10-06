@@ -121,8 +121,8 @@ export const expect_to_fail = async (f : { () : Promise<void> }, error : att.Mic
  * @param key_type type of key
  * @returns Micheline value associated to key
  */
-export const get_big_map_value = async (big_map_id: bigint, key_value : att.Micheline, key_type : att.MichelineType) : Promise<att.Micheline> => {
-  return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type)
+export const get_big_map_value = async (big_map_id: bigint, key_value : att.Micheline, key_type : att.MichelineType, value_type ?: att.MichelineType) : Promise<att.Micheline> => {
+  return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type, value_type)
 }
 
 export const sign = async (b : att.Bytes, a : Account) : Promise<att.Signature> => {
