@@ -126,7 +126,7 @@ export const get_big_map_value = async (big_map_id: bigint, key_value : att.Mich
 }
 
 export const sign = async (b : att.Bytes, a : Account) : Promise<att.Signature> => {
-  const signed = await Completium.sign(b.toString(), { as: a.get_name() })
+  const signed = await Completium.signFromSk(b.toString(), { sk: a.get_secret_key() })
   return new att.Signature(signed.prefixSig)
 }
 
