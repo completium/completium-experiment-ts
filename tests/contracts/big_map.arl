@@ -1,0 +1,3 @@
+archetype %big_map
+
+variable bm : big_map<nat, string> = [(2, "mystr")]
