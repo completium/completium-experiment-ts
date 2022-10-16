@@ -1,6 +1,6 @@
 {
   "name": "@completium/experiment-ts",
-  "version": "0.0.90",
+  "version": "0.0.91",
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -13,7 +13,8 @@
   "scripts": {
     "test": "ts-mocha --timeout 0 --slow 99999999999999999 ./tests/*.spec.ts",
     "exec": "rm -rf ./build && npx tsc --outDir build && node ./build/src/main.js",
-    "build": "rm -rf ./build && npx tsc --outDir build"
+    "build": "rm -rf ./build && npx tsc --outDir build",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,7 @@
   },
   "homepage": "https://github.com/completium/completium-experiment-ts#readme",
   "dependencies": {
-    "@completium/archetype-ts-types": "^0.0.6",
+    "@completium/archetype-ts-types": "^0.0.7",
     "@completium/completium-cli": "^0.4.33",
     "bignumber.js": "^9.0.2"
   },
