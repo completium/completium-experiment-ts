@@ -140,6 +140,15 @@ export const get_storage = async (c : string) : Promise<any> => {
 }
 
 /**
+ * Returns contract storage
+ * @param c contract address
+ * @returns storage record
+ */
+export const get_raw_storage = async (c : string) : Promise<any> => {
+  return await Completium.getRawStorage(c)
+}
+
+/**
  * Deploys contract
  * @param path (relative/absolute) path to archetype file (.arl)
  * @param params contract parameters

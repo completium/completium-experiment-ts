@@ -1,6 +1,6 @@
 import { Bytes, MichelineType, Nat } from '@completium/archetype-ts-types';
 import BigNumber from 'bignumber.js';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage } from '../src';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage } from '../src';
 
 const assert = require('assert');
 
@@ -28,6 +28,22 @@ describe('Completium', () => {
     const value_type : MichelineType  = {prim: "string", annots: []};
     const value = await get_big_map_value(big_map_id, key_value, key_type, value_type);
     assert (value == 'mystr');
+  })
+
+  it('get_storage', async () => {
+    const alice = get_account('alice');
+    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+
+    const storage = await get_storage(addr);
+    assert (storage == '0');
+  })
+
+  it('get_raw_storage', async () => {
+    const alice = get_account('alice');
+    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+
+    const storage = await get_raw_storage(addr);
+    assert (storage.int == '0');
   })
 })
 
