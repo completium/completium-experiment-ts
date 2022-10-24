@@ -1,6 +1,5 @@
 import { Bytes, MichelineType, Nat } from '@completium/archetype-ts-types';
-import BigNumber from 'bignumber.js';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage } from '../src';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call } from '../src';
 
 const assert = require('assert');
 
@@ -16,6 +15,20 @@ describe('Completium', () => {
     const bob = get_account('bob');
     const storage = new Nat(0);
     const addr = await originate('./tests/contracts/simple.tz', storage.to_mich(), { as: bob });
+  })
+
+  it('call', async () => {
+    const alice = get_account('alice');
+    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+    await call(addr, "exec", {prim: "Unit"}, {as: alice})
+  })
+
+  it('expect_to_fail', async () => {
+    const alice = get_account('alice');
+    const addr = await deploy('./tests/contracts/error.arl', {}, { as: alice });
+    await expect_to_fail(async () => {
+      await call(addr, "exec", {prim: "Unit"}, {as: alice})
+    }, {"string": "error"})
   })
 
   it('get_big_map_value', async () => {
