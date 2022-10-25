@@ -300,7 +300,7 @@ export const exec_getter = async (contract: att.Address, entry: string, arg: att
     amount: param.amount ? param.amount.toString() + "utz" : undefined,
     json: true,
   })
-  return { ...res, dummy: 0 }
+  return { value: res, dummy: 0 }
 }
 
 export const exec_view = async (contract: att.Address, view: string, arg: att.Micheline, param: Partial<Parameters>) : Promise<att.ViewResult> => {
@@ -311,7 +311,7 @@ export const exec_view = async (contract: att.Address, view: string, arg: att.Mi
     json: true,
     taquito_schema: true
   })
-  return { ...res, dummy: 0 }
+  return { value: res, dummy: 0 }
 }
 
 /**
