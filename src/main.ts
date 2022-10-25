@@ -4,20 +4,20 @@ import * as att from '@completium/archetype-ts-types'
 /* Interfaces -------------------------------------------------------------- */
 
 export class Account {
-  name : string;
-  pubk : string;
-  pkh  : string;
-  sk   : string;
-  constructor(n : string, k : string, h : string, s : string) {
+  name: string;
+  pubk: string;
+  pkh: string;
+  sk: string;
+  constructor(n: string, k: string, h: string, s: string) {
     this.name = n
     this.pubk = k
-    this.pkh  = h
-    this.sk   = s
+    this.pkh = h
+    this.sk = s
   }
-  get_address = () : att.Address => {
+  get_address = (): att.Address => {
     return new att.Address(this.pkh)
   }
-  get_public_key = () : att.Key => {
+  get_public_key = (): att.Key => {
     return new att.Key(this.pubk)
   }
   get_secret_key = () => {
@@ -26,27 +26,27 @@ export class Account {
   get_name = () => {
     return this.name
   }
-  get_balance = async () : Promise<att.Tez> => {
+  get_balance = async (): Promise<att.Tez> => {
     return await get_balance(this.get_address())
   }
-  sign = async (value : att.Bytes) => {
+  sign = async (value: att.Bytes) => {
     return await sign(value, this)
   }
 }
 
 export interface Parameters {
-  as     : Account,
-  amount : att.Tez
+  as: Account,
+  amount: att.Tez
 }
 
 /* Experiment API ---------------------------------------------------------- */
 
-export const set_endpoint = (endpoint : string) => {
+export const set_endpoint = (endpoint: string) => {
   Completium.setEndpoint(endpoint);
 }
 
-export const get_endpoint = () : string => {
-  const res : string = Completium.getEndpoint();
+export const get_endpoint = (): string => {
+  const res: string = Completium.getEndpoint();
   return res;
 }
 
@@ -54,25 +54,25 @@ export const set_mockup = () => {
   Completium.setEndpoint('mockup');
 }
 
-export const is_mockup = () : boolean => {
-  const res : boolean = Completium.isMockup();
+export const is_mockup = (): boolean => {
+  const res: boolean = Completium.isMockup();
   return res;
 }
 
-export const set_quiet = (b : boolean) => {
+export const set_quiet = (b: boolean) => {
   Completium.setQuiet(b)
 }
 
-export const set_mockup_now = (d : Date) => {
+export const set_mockup_now = (d: Date) => {
   Completium.setMockupNow(Math.floor(d.getTime() / 1000 - 1))
 }
 
-export const get_account = (name : string) : Account => {
+export const get_account = (name: string): Account => {
   const a = Completium.getAccount(name)
   return new Account(a.name, a.pubk, a.pkh, a.sk)
 }
 
-export const pack = (obj : att.Micheline, typ ?: att.MichelineType) : att.Bytes => {
+export const pack = (obj: att.Micheline, typ?: att.MichelineType): att.Bytes => {
   if (typ != undefined) {
     return new att.Bytes(Completium.packTyped(obj, typ))
   } else {
@@ -80,11 +80,11 @@ export const pack = (obj : att.Micheline, typ ?: att.MichelineType) : att.Bytes 
   }
 }
 
-export const blake2b = (b : att.Bytes) : att.Bytes => {
+export const blake2b = (b: att.Bytes): att.Bytes => {
   return new att.Bytes(Completium.blake2b(b.toString()))
 }
 
-export const get_balance = async (addr : att.Address) : Promise<att.Tez> => {
+export const get_balance = async (addr: att.Address): Promise<att.Tez> => {
   const b = await Completium.getBalance(addr.toString())
   return new att.Tez(b, "mutez")
 }
@@ -95,13 +95,13 @@ export const get_balance = async (addr : att.Address) : Promise<att.Tez> => {
  * @param f async call to execute
  * @param error error that f is expected to thow
  */
-export const expect_to_fail = async (f : { () : Promise<void> }, error : att.Micheline) => {
+export const expect_to_fail = async (f: { (): Promise<void> }, error: att.Micheline) => {
   const str_error = JSON.stringify(error, null, 2).toString().replace(/\\"/gi, '')
-  const m = "Failed to throw " + str_error ;
+  const m = "Failed to throw " + str_error;
   try {
     await f();
     throw new Error(m)
-  } catch (ex : any) {
+  } catch (ex: any) {
     if (ex.value) {
       const json = Completium.exprMichelineToJson(ex.value)
       const str_value = JSON.stringify(json, null, 2)
@@ -121,11 +121,11 @@ export const expect_to_fail = async (f : { () : Promise<void> }, error : att.Mic
  * @param key_type type of key
  * @returns Micheline value associated to key
  */
-export const get_big_map_value = async (big_map_id: bigint, key_value : att.Micheline, key_type : att.MichelineType, value_type ?: att.MichelineType) : Promise<any> => {
+export const get_big_map_value = async (big_map_id: bigint, key_value: att.Micheline, key_type: att.MichelineType, value_type?: att.MichelineType): Promise<any> => {
   return await Completium.getValueFromBigMap(big_map_id.toString(), key_value, key_type, value_type)
 }
 
-export const sign = async (b : att.Bytes, a : Account) : Promise<att.Signature> => {
+export const sign = async (b: att.Bytes, a: Account): Promise<att.Signature> => {
   const signed = await Completium.signFromSk(b.toString(), { sk: a.get_secret_key() })
   return new att.Signature(signed.prefixSig)
 }
@@ -135,7 +135,7 @@ export const sign = async (b : att.Bytes, a : Account) : Promise<att.Signature> 
  * @param c contract address
  * @returns storage record
  */
-export const get_storage = async (c : string) : Promise<any> => {
+export const get_storage = async (c: string): Promise<any> => {
   return await Completium.getStorage(c)
 }
 
@@ -144,7 +144,7 @@ export const get_storage = async (c : string) : Promise<any> => {
  * @param c contract address
  * @returns storage record
  */
-export const get_raw_storage = async (c : string) : Promise<any> => {
+export const get_raw_storage = async (c: string): Promise<any> => {
   return await Completium.getRawStorage(c)
 }
 
@@ -155,48 +155,48 @@ export const get_raw_storage = async (c : string) : Promise<any> => {
  * @param p deployment parameters (as, amout)
  * @returns address of deployed contract
  */
-export const deploy = async (path : string, params : any, p : Partial<Parameters>) : Promise<string> => {
+export const deploy = async (path: string, params: any, p: Partial<Parameters>): Promise<string> => {
   const [contract, _] = await Completium.deploy(
     path, {
-      parametersMicheline: params,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined
-    }
+    parametersMicheline: params,
+    as: p.as ? p.as.pkh : undefined,
+    amount: p.amount ? p.amount.toString() + "utz" : undefined
+  }
   )
   return contract.address
 }
 
-export const originate = async (path : string, storage : att.Micheline, p : Partial<Parameters>) : Promise<string> => {
+export const originate = async (path: string, storage: att.Micheline, p: Partial<Parameters>): Promise<string> => {
   const [contract, _] = await Completium.originate(
     path, {
-      storage_json : storage,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined
-    }
+    storage_json: storage,
+    as: p.as ? p.as.pkh : undefined,
+    amount: p.amount ? p.amount.toString() + "utz" : undefined
+  }
   )
   return contract.address
 }
 
-export const deploy_from_json = async (name : string, code : any, storage : att.Micheline) : Promise<string> => {
+export const deploy_from_json = async (name: string, code: any, storage: att.Micheline): Promise<string> => {
   const [contract, _] = await Completium.originate(
     null, {
-      named : name,
-      contract_json : code,
-      storage_json : storage
-    }
+    named: name,
+    contract_json: code,
+    storage_json: storage
+  }
   )
   return contract.address
 }
 
-export const deploy_callback = async (name: string, mt : att.MichelineType) : Promise<string> => {
+export const deploy_callback = async (name: string, mt: att.MichelineType): Promise<string> => {
   return await deploy_from_json(name + "_callback", [
     {
       "prim": "storage",
       "args": [
         {
-              "prim": "option",
-              "args": [
-                mt
+          "prim": "option",
+          "args": [
+            mt
           ]
         }
       ]
@@ -204,7 +204,7 @@ export const deploy_callback = async (name: string, mt : att.MichelineType) : Pr
     {
       "prim": "parameter",
       "args": [
-        { ...mt, annots:["%callback"] }
+        { ...mt, annots: ["%callback"] }
       ]
     },
     {
@@ -231,10 +231,10 @@ export const deploy_callback = async (name: string, mt : att.MichelineType) : Pr
         ]
       ]
     }
-  ], { prim : "None" })
+  ], { prim: "None" })
 }
 
-export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callback_addr : string, mich_to : (_ : any) => T) : Promise<T> => {
+export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callback_addr: string, mich_to: (_: any) => T): Promise<T> => {
   const mich = await get_storage(callback_addr)
   //const option = mich_to_option<T>(mich, mich_to)
   return mich_to(mich)
@@ -247,67 +247,70 @@ export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callbac
  * @param a entry point argument
  * @param p parameters (as, amount)
  */
-export const call = async (c : string, e : string, a : att.Micheline, p : Partial<Parameters>) => {
+export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>) => {
   return await Completium.call(c, {
-      entry: e,
-      argJsonMichelson: a,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined
-   })
+    entry: e,
+    argJsonMichelson: a,
+    as: p.as ? p.as.pkh : undefined,
+    amount: p.amount ? p.amount.toString() + "utz" : undefined
+  })
 }
 
-export const get_call_param = async (c : string, e : string, a : att.Micheline, p : Partial<Parameters>) : Promise<att.CallParameter> => {
+export const get_call_param = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>): Promise<att.CallParameter> => {
   const param = await Completium.call(c, {
-      entry: e,
-      argJsonMichelson: a,
-      as: p.as ? p.as.pkh : undefined,
-      amount: p.amount ? p.amount.toString()+"utz" : undefined,
-      only_param : true
-   })
-   return {
-    destination : new att.Address(param.to),
-    amount      : new att.Tez(param.amount),
-    fee         : param.fee ? new att.Tez(param.fee) : undefined,
-    entrypoint  : param.parameter.entrypoint,
-    arg         : param.parameter.value
-   }
+    entry: e,
+    argJsonMichelson: a,
+    as: p.as ? p.as.pkh : undefined,
+    amount: p.amount ? p.amount.toString() + "utz" : undefined,
+    only_param: true
+  })
+  return {
+    destination: new att.Address(param.to),
+    amount: new att.Tez(param.amount),
+    fee: param.fee ? new att.Tez(param.fee) : undefined,
+    entrypoint: param.parameter.entrypoint,
+    arg: param.parameter.value
+  }
 }
 
-export const exec_batch = async (cps : att.CallParameter[], p : Partial<Parameters>) => {
-  return await Completium.exec_batch(cps.map(x => {
+export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters>) : Promise<att.BatchResult> => {
+  const res = await Completium.exec_batch(cps.map(x => {
     return {
-      kind : "transaction",
-      to   : x.destination.toString(),
-      amount : x.amount.toString(),
-      mutez : true,
-      fee : x.fee?.toString(),
-      parameter : {
-        entrypoint : x.entrypoint,
-        value : x.arg
+      kind: "transaction",
+      to: x.destination.toString(),
+      amount: x.amount.toString(),
+      mutez: true,
+      fee: x.fee?.toString(),
+      parameter: {
+        entrypoint: x.entrypoint,
+        value: x.arg
       }
     }
   }), {
     as: p.as ? p.as.pkh : undefined
   })
+  return res
 }
 
-export const exec_getter = async (contract : att.Address, entry : string, arg : att.Micheline, param : Partial<Parameters>) => {
-  return await Completium.runGetter(entry, contract.toString(), {
-      argJsonMichelson: arg,
-      as: param.as ? param.as.pkh : undefined,
-      amount: param.amount ? param.amount.toString() + "utz" : undefined,
-      json : true,
-   })
+export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>) : Promise<att.GetterResult> => {
+  const res = await Completium.runGetter(entry, contract.toString(), {
+    argJsonMichelson: arg,
+    as: param.as ? param.as.pkh : undefined,
+    amount: param.amount ? param.amount.toString() + "utz" : undefined,
+    json: true,
+  })
+  return { ...res, dummy: 0 }
 }
 
-export const exec_view = async (contract : att.Address, view : string, arg : att.Micheline, param : Partial<Parameters>) => {
-  return await Completium.runView(view, contract.toString(), {
-      argJsonMichelson: arg,
-      as: param.as ? param.as.pkh : undefined,
-      amount: param.amount ? param.amount.toString() + "utz" : undefined,
-      json : true,
-      taquito_schema : true
-   })
+export const exec_view = async (contract: att.Address, view: string, arg: att.Micheline, param: Partial<Parameters>) : Promise<att.ViewResult> => {
+  const res = await Completium.runView(view, contract.toString(), {
+    argJsonMichelson: arg,
+    as: param.as ? param.as.pkh : undefined,
+    amount: param.amount ? param.amount.toString() + "utz" : undefined,
+    json: true,
+    taquito_schema: true
+  })
+  return { ...res, dummy: 0 }
 }
 
 /**
@@ -317,8 +320,9 @@ export const exec_view = async (contract : att.Address, view : string, arg : att
  * @param amount amount to transfer in mutez
  * @returns
  */
-export const transfer = async (from : Account, to : Account | string, amount : bigint) => {
+export const transfer = async (from: Account, to: Account | string, amount: bigint) : Promise<att.TransferResult> => {
   const to_ = typeof to == "string" ? to : to.pkh
-  return await Completium.transfer(from.pkh, to_, amount.toString())
+  const res = await Completium.transfer(from.pkh, to_, amount.toString())
+  return { ...res, dummy: 0 }
 }
 
