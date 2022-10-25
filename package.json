@@ -1,6 +1,6 @@
 {
   "name": "@completium/experiment-ts",
-  "version": "0.0.94",
+  "version": "0.0.95",
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/expect": "^24.3.0",
-    "@types/mocha": "^10.0.0"
+    "@types/mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0"
   }
 }

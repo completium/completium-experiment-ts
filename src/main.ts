@@ -144,7 +144,7 @@ export const get_storage = async (c: string): Promise<any> => {
  * @param c contract address
  * @returns storage record
  */
-export const get_raw_storage = async (c: string): Promise<any> => {
+export const get_raw_storage = async (c: string): Promise<att.Micheline> => {
   return await Completium.getRawStorage(c)
 }
 
@@ -155,7 +155,7 @@ export const get_raw_storage = async (c: string): Promise<any> => {
  * @param p deployment parameters (as, amout)
  * @returns address of deployed contract
  */
-export const deploy = async (path: string, params: any, p: Partial<Parameters>): Promise<string> => {
+export const deploy = async (path: string, params: any, p: Partial<Parameters>): Promise<att.DeployResult> => {
   const [contract, _] = await Completium.deploy(
     path, {
     parametersMicheline: params,
@@ -163,10 +163,10 @@ export const deploy = async (path: string, params: any, p: Partial<Parameters>):
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   }
   )
-  return contract.address
+  return contract
 }
 
-export const originate = async (path: string, storage: att.Micheline, p: Partial<Parameters>): Promise<string> => {
+export const originate = async (path: string, storage: att.Micheline, p: Partial<Parameters>): Promise<att.OriginateResult> => {
   const [contract, _] = await Completium.originate(
     path, {
     storage_json: storage,
@@ -174,10 +174,10 @@ export const originate = async (path: string, storage: att.Micheline, p: Partial
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   }
   )
-  return contract.address
+  return contract
 }
 
-export const deploy_from_json = async (name: string, code: any, storage: att.Micheline): Promise<string> => {
+export const deploy_from_json = async (name: string, code: any, storage: att.Micheline): Promise<att.DeployResult> => {
   const [contract, _] = await Completium.originate(
     null, {
     named: name,
@@ -185,10 +185,10 @@ export const deploy_from_json = async (name: string, code: any, storage: att.Mic
     storage_json: storage
   }
   )
-  return contract.address
+  return contract
 }
 
-export const deploy_callback = async (name: string, mt: att.MichelineType): Promise<string> => {
+export const deploy_callback = async (name: string, mt: att.MichelineType): Promise<att.DeployResult> => {
   return await deploy_from_json(name + "_callback", [
     {
       "prim": "storage",
@@ -247,13 +247,14 @@ export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callbac
  * @param a entry point argument
  * @param p parameters (as, amount)
  */
-export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>) => {
-  return await Completium.call(c, {
+export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>) : Promise<att.CallResult> => {
+  const res = await Completium.call(c, {
     entry: e,
     argJsonMichelson: a,
     as: p.as ? p.as.pkh : undefined,
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   })
+  return { ...res, dummy: 0 }
 }
 
 export const get_call_param = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>): Promise<att.CallParameter> => {

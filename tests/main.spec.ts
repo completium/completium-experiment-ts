@@ -1,4 +1,4 @@
-import { Bytes, MichelineType, Nat } from '@completium/archetype-ts-types';
+import { Bytes, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
 import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call } from '../src';
 
 const assert = require('assert');
@@ -19,22 +19,22 @@ describe('Completium', () => {
 
   it('call', async () => {
     const alice = get_account('alice');
-    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
-    await call(addr, "exec", {prim: "Unit"}, {as: alice})
+    const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+    await call(res.address, "exec", {prim: "Unit"}, {as: alice})
   })
 
   it('expect_to_fail', async () => {
     const alice = get_account('alice');
-    const addr = await deploy('./tests/contracts/error.arl', {}, { as: alice });
+    const res = await deploy('./tests/contracts/error.arl', {}, { as: alice });
     await expect_to_fail(async () => {
-      await call(addr, "exec", {prim: "Unit"}, {as: alice})
+      await call(res.address, "exec", {prim: "Unit"}, {as: alice})
     }, {"string": "error"})
   })
 
   it('get_big_map_value', async () => {
     const alice = get_account('alice');
-    const addr = await deploy('./tests/contracts/big_map.arl', {}, { as: alice });
-    const storage = await get_storage(addr);
+    const res = await deploy('./tests/contracts/big_map.arl', {}, { as: alice });
+    const storage = await get_storage(res.address);
     const big_map_id : bigint = storage;
     const key_value = {int: "2"};
     const key_type : MichelineType = {prim: "nat", annots: []};
@@ -45,18 +45,18 @@ describe('Completium', () => {
 
   it('get_storage', async () => {
     const alice = get_account('alice');
-    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+    const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
 
-    const storage = await get_storage(addr);
+    const storage = await get_storage(res.address);
     assert (storage == '0');
   })
 
   it('get_raw_storage', async () => {
     const alice = get_account('alice');
-    const addr = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
+    const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
 
-    const storage = await get_raw_storage(addr);
-    assert (storage.int == '0');
+    const storage = await get_raw_storage(res.address);
+    assert ((storage as Mint).int == '0');
   })
 })
 
