@@ -64,7 +64,43 @@ export const set_quiet = (b: boolean) => {
 }
 
 export const set_mockup_now = (d: Date) => {
-  Completium.setMockupNow(Math.floor(d.getTime() / 1000 - 1))
+  const time = d.getTime();
+  const res = Math.floor(time / 1000)
+  Completium.setMockupNow(res)
+}
+
+export const get_mockup_now = () : Date => {
+  return Completium.getMockupNow()
+}
+
+export const delay_mockup_now_by_second = (v : number) => {
+  const md = get_mockup_now();
+  const new_date_value = md.getTime() + v * 1000;
+  set_mockup_now(new Date(new_date_value))
+}
+
+export const delay_mockup_now_by_minute = (v : number) => {
+  const md = get_mockup_now();
+  const new_date_value = md.getTime() + v * 1000 * 60;
+  set_mockup_now(new Date(new_date_value))
+}
+
+export const delay_mockup_now_by_hour = (v : number) => {
+  const md = get_mockup_now();
+  const new_date_value = md.getTime() + v * 1000 * 60 * 60;
+  set_mockup_now(new Date(new_date_value))
+}
+
+export const delay_mockup_now_by_day = (v : number) => {
+  const md = get_mockup_now();
+  const new_date_value = md.getTime() + v * 1000 * 60 * 60 * 24;
+  set_mockup_now(new Date(new_date_value))
+}
+
+export const delay_mockup_now_by_week = (v : number) => {
+  const md = get_mockup_now();
+  const new_date_value = md.getTime() + v * 1000 * 60 * 60 * 24 * 7;
+  set_mockup_now(new Date(new_date_value))
 }
 
 export const get_account = (name: string): Account => {
@@ -247,7 +283,7 @@ export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callbac
  * @param a entry point argument
  * @param p parameters (as, amount)
  */
-export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>) : Promise<att.CallResult> => {
+export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>): Promise<att.CallResult> => {
   const res = await Completium.call(c, {
     entry: e,
     argJsonMichelson: a,
@@ -274,7 +310,7 @@ export const get_call_param = async (c: string, e: string, a: att.Micheline, p: 
   }
 }
 
-export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters>) : Promise<att.BatchResult> => {
+export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters>): Promise<att.BatchResult> => {
   const res = await Completium.exec_batch(cps.map(x => {
     return {
       kind: "transaction",
@@ -293,7 +329,7 @@ export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters
   return res
 }
 
-export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>) : Promise<att.GetterResult> => {
+export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.GetterResult> => {
   const res = await Completium.runGetter(entry, contract.toString(), {
     argJsonMichelson: arg,
     as: param.as ? param.as.pkh : undefined,
@@ -303,7 +339,7 @@ export const exec_getter = async (contract: att.Address, entry: string, arg: att
   return { value: res, dummy: 0 }
 }
 
-export const exec_view = async (contract: att.Address, view: string, arg: att.Micheline, param: Partial<Parameters>) : Promise<att.ViewResult> => {
+export const exec_view = async (contract: att.Address, view: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.ViewResult> => {
   const res = await Completium.runView(view, contract.toString(), {
     argJsonMichelson: arg,
     as: param.as ? param.as.pkh : undefined,
@@ -321,7 +357,7 @@ export const exec_view = async (contract: att.Address, view: string, arg: att.Mi
  * @param amount amount to transfer in mutez
  * @returns
  */
-export const transfer = async (from: Account, to: Account | string, amount: bigint) : Promise<att.TransferResult> => {
+export const transfer = async (from: Account, to: Account | string, amount: bigint): Promise<att.TransferResult> => {
   const to_ = typeof to == "string" ? to : to.pkh
   const res = await Completium.transfer(from.pkh, to_, amount.toString())
   return { ...res, dummy: 0 }
