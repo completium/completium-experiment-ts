@@ -1,6 +1,6 @@
 {
   "name": "@completium/experiment-ts",
-  "version": "0.0.97",
+  "version": "0.0.98",
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",

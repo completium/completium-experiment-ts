@@ -213,18 +213,19 @@ export const originate = async (path: string, storage: att.Micheline, p: Partial
   return contract
 }
 
-export const deploy_from_json = async (name: string, code: any, storage: att.Micheline): Promise<att.DeployResult> => {
+export const deploy_from_json = async (name: string, code: any, storage: att.Micheline, p: Partial<Parameters>): Promise<att.DeployResult> => {
   const [contract, _] = await Completium.originate(
     null, {
     named: name,
     contract_json: code,
+    as: p.as ? p.as.pkh : undefined,
     storage_json: storage
   }
   )
   return contract
 }
 
-export const deploy_callback = async (name: string, mt: att.MichelineType): Promise<att.DeployResult> => {
+export const deploy_callback = async (name: string, mt: att.MichelineType, p: Partial<Parameters>): Promise<att.DeployResult> => {
   return await deploy_from_json(name + "_callback", [
     {
       "prim": "storage",
@@ -267,7 +268,7 @@ export const deploy_callback = async (name: string, mt: att.MichelineType): Prom
         ]
       ]
     }
-  ], { prim: "None" })
+  ], { prim: "None" }, p)
 }
 
 export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callback_addr: string, mich_to: (_: any) => T): Promise<T> => {
