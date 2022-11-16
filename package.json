@@ -1,6 +1,6 @@
 {
   "name": "@completium/experiment-ts",
-  "version": "0.0.100",
+  "version": "0.0.101",
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -34,7 +34,7 @@
   "homepage": "https://github.com/completium/completium-experiment-ts#readme",
   "dependencies": {
     "@completium/archetype-ts-types": "^0.0.13",
-    "@completium/completium-cli": "^0.4.40",
+    "@completium/completium-cli": "^0.4.46",
     "bignumber.js": "^9.0.2"
   },
   "devDependencies": {
