@@ -4,9 +4,6 @@
   "description": "Test Archetype contracts in TS ",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
-  "files": [
-    "/build"
-  ],
   "publishConfig": {
     "access": "public"
   },
