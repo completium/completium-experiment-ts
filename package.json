@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/completium/completium-experiment-ts#readme",
   "dependencies": {
-    "@completium/archetype-ts-types": "^0.0.14",
+    "@completium/archetype-ts-types": "latest",
     "@completium/completium-cli": "^0.4.46",
     "bignumber.js": "^9.0.2"
   },
