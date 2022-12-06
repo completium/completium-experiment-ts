@@ -1,6 +1,7 @@
 import { Bytes, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
 import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week } from '../src';
 
+const Completium = require('@completium/completium-cli');
 const assert = require('assert');
 
 set_quiet(true)
@@ -21,27 +22,27 @@ describe('Completium', () => {
   it('call', async () => {
     const alice = get_account('alice');
     const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
-    await call(res.address, "exec", {prim: "Unit"}, {as: alice})
+    await call(res.address, "exec", { prim: "Unit" }, { as: alice })
   })
 
   it('expect_to_fail', async () => {
     const alice = get_account('alice');
     const res = await deploy('./tests/contracts/error.arl', {}, { as: alice });
     await expect_to_fail(async () => {
-      await call(res.address, "exec", {prim: "Unit"}, {as: alice})
-    }, {"string": "error"})
+      await call(res.address, "exec", { prim: "Unit" }, { as: alice })
+    }, { "string": "error" })
   })
 
   it('get_big_map_value', async () => {
     const alice = get_account('alice');
     const res = await deploy('./tests/contracts/big_map.arl', {}, { as: alice });
     const storage = await get_storage(res.address);
-    const big_map_id : bigint = storage;
-    const key_value = {int: "2"};
-    const key_type : MichelineType = {prim: "nat", annots: []};
-    const value_type : MichelineType  = {prim: "string", annots: []};
+    const big_map_id: bigint = storage;
+    const key_value = { int: "2" };
+    const key_type: MichelineType = { prim: "nat", annots: [] };
+    const value_type: MichelineType = { prim: "string", annots: [] };
     const value = await get_big_map_value(big_map_id, key_value, key_type, value_type);
-    assert (value == 'mystr');
+    assert(value == 'mystr');
   })
 
   it('get_storage', async () => {
@@ -49,7 +50,7 @@ describe('Completium', () => {
     const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
 
     const storage = await get_storage(res.address);
-    assert (storage == '0');
+    assert(storage == '0');
   })
 
   it('get_raw_storage', async () => {
@@ -57,7 +58,7 @@ describe('Completium', () => {
     const res = await deploy('./tests/contracts/simple.arl', {}, { as: alice });
 
     const storage = await get_raw_storage(res.address);
-    assert ((storage as Mint).int == '0');
+    assert((storage as Mint).int == '0');
   })
 })
 
@@ -169,5 +170,23 @@ describe('Mockup time', () => {
     delay_mockup_now_by_week(2)
     const v = get_mockup_now();
     assert(v.toISOString() == "2020-01-15T00:00:01.000Z", "Invalid value");
+  })
+
+  it('check on-chain now', async () => {
+    const d = new Date("2022-12-06T16:30:00.000Z");
+    set_mockup_now(d)
+
+    const alice = get_account('alice');
+    const contract = await deploy('./tests/contracts/gnow.arl', {}, { as: alice });
+
+    await call(contract.address, "exec", { prim: "Unit" }, { as: alice })
+
+    const nd = get_mockup_now();
+    assert(d.toISOString() == nd.toISOString(), "Invalid value");
+
+    const storage = await Completium.getStorage(contract.address);
+    const onchain_date = new Date(storage);
+
+    assert(onchain_date.toISOString() == nd.toISOString(), "Invalid value");
   })
 })
