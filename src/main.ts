@@ -69,35 +69,35 @@ export const set_mockup_now = (d: Date) => {
   Completium.setMockupNow(res)
 }
 
-export const get_mockup_now = () : Date => {
+export const get_mockup_now = (): Date => {
   return Completium.getMockupNow()
 }
 
-export const delay_mockup_now_by_second = (v : number) => {
+export const delay_mockup_now_by_second = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000;
   set_mockup_now(new Date(new_date_value))
 }
 
-export const delay_mockup_now_by_minute = (v : number) => {
+export const delay_mockup_now_by_minute = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000 * 60;
   set_mockup_now(new Date(new_date_value))
 }
 
-export const delay_mockup_now_by_hour = (v : number) => {
+export const delay_mockup_now_by_hour = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000 * 60 * 60;
   set_mockup_now(new Date(new_date_value))
 }
 
-export const delay_mockup_now_by_day = (v : number) => {
+export const delay_mockup_now_by_day = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000 * 60 * 60 * 24;
   set_mockup_now(new Date(new_date_value))
 }
 
-export const delay_mockup_now_by_week = (v : number) => {
+export const delay_mockup_now_by_week = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000 * 60 * 60 * 24 * 7;
   set_mockup_now(new Date(new_date_value))
@@ -272,9 +272,13 @@ export const deploy_callback = async (name: string, mt: att.MichelineType, p: Pa
 }
 
 export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callback_addr: string, mich_to: (_: any) => T): Promise<T> => {
-  const mich = await get_storage(callback_addr)
-  //const option = mich_to_option<T>(mich, mich_to)
-  return mich_to(mich)
+  const mich = await get_raw_storage(callback_addr)
+  if ((mich as att.Msingle) && (mich as att.Msingle).prim == 'Some') {
+    return mich_to((mich as att.Msingle).args[0])
+  } else if ((mich as att.Mprim) && (mich as att.Mprim).prim == 'None') {
+    throw new Error(`get_callback_value: None value`)
+  }
+  throw new Error(`get_callback_value: internal error`)
 }
 
 /**
@@ -345,8 +349,7 @@ export const exec_view = async (contract: att.Address, view: string, arg: att.Mi
     argJsonMichelson: arg,
     as: param.as ? param.as.pkh : undefined,
     amount: param.amount ? param.amount.toString() + "utz" : undefined,
-    json: true,
-    taquito_schema: true
+    json: true
   })
   return { value: res, dummy: 0 }
 }
