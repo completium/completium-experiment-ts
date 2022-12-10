@@ -199,7 +199,7 @@ export const deploy = async (path: string, params: any, p: Partial<Parameters>):
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   }
   )
-  return contract
+  return { address: contract.address }
 }
 
 export const originate = async (path: string, storage: att.Micheline, p: Partial<Parameters>): Promise<att.OriginateResult> => {
@@ -210,7 +210,7 @@ export const originate = async (path: string, storage: att.Micheline, p: Partial
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   }
   )
-  return contract
+  return { address: contract.address }
 }
 
 export const deploy_from_json = async (name: string, code: any, storage: att.Micheline, p: Partial<Parameters>): Promise<att.DeployResult> => {
@@ -222,7 +222,7 @@ export const deploy_from_json = async (name: string, code: any, storage: att.Mic
     storage_json: storage
   }
   )
-  return contract
+  return { address: contract.address }
 }
 
 export const deploy_callback = async (name: string, mt: att.MichelineType, p: Partial<Parameters>): Promise<att.DeployResult> => {
