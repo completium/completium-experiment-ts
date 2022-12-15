@@ -1,5 +1,5 @@
-import { Bytes, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week } from '../src';
+import { Bytes, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr } from '../src';
 
 const Completium = require('@completium/completium-cli');
 const assert = require('assert');
@@ -188,5 +188,19 @@ describe('Mockup time', () => {
     const onchain_date = new Date(storage);
 
     assert(onchain_date.toISOString() == nd.toISOString(), "Invalid value");
+  })
+})
+
+describe('Utils', () => {
+  it('expr_micheline_to_json', async () => {
+    const input = '{ DROP }'
+    const output = expr_micheline_to_json(input);
+    assert(JSON.stringify(output, null, 0) == '[{"prim":"DROP"}]')
+  })
+
+  it('json_micheline_to_expr', async () => {
+    const input: Micheline = [{ "prim": "DROP" }]
+    const output = json_micheline_to_expr(input);
+    assert(output == '{DROP}')
   })
 })

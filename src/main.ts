@@ -367,3 +367,10 @@ export const transfer = async (from: Account, to: Account | string, amount: bigi
   return { ...res, dummy: 0 }
 }
 
+export const expr_micheline_to_json = (input: string) : att.Micheline =>  {
+  return Completium.exprMichelineToJson(input) as att.Micheline
+}
+
+export const json_micheline_to_expr = (input: att.Micheline) : string  =>  {
+  return Completium.jsonMichelineToExpr(input) as string
+}
