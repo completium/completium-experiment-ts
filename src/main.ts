@@ -73,6 +73,15 @@ export const get_mockup_now = (): Date => {
   return Completium.getMockupNow()
 }
 
+export const set_mockup_chain_id = (input: att.Chain_id) => {
+  Completium.setMockupChainId(input.toString())
+}
+
+export const get_chain_id = async (): Promise<att.Chain_id> => {
+  const value :string = await Completium.getChainId();
+  return new att.Chain_id(value)
+}
+
 export const delay_mockup_now_by_second = (v: number) => {
   const md = get_mockup_now();
   const new_date_value = md.getTime() + v * 1000;

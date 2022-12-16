@@ -1,5 +1,5 @@
-import { Bytes, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr } from '../src';
+import { Bytes, Chain_id, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id } from '../src';
 
 const Completium = require('@completium/completium-cli');
 const assert = require('assert');
@@ -188,6 +188,20 @@ describe('Mockup time', () => {
     const onchain_date = new Date(storage);
 
     assert(onchain_date.toISOString() == nd.toISOString(), "Invalid value");
+  })
+})
+
+describe('Mockup chain_id', () => {
+  it('expr_micheline_to_json', async () => {
+    const init_value = await get_chain_id();
+
+    const chainid = new Chain_id("NetXdQprcVkpaWU");
+    set_mockup_chain_id(chainid)
+
+    const v = await get_chain_id();
+    assert(v.equals(chainid))
+
+    set_mockup_chain_id(init_value)
   })
 })
 
