@@ -1,4 +1,4 @@
-import { Bytes, Chain_id, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
+import { Address, Bytes, Chain_id, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
 import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id } from '../src';
 
 const Completium = require('@completium/completium-cli');
@@ -216,5 +216,29 @@ describe('Utils', () => {
     const input: Micheline = [{ "prim": "DROP" }]
     const output = json_micheline_to_expr(input);
     assert(output == '{DROP}')
+  })
+})
+
+describe('Events', () => {
+  it('check', async () => {
+    set_endpoint('mockup');
+    const alice = get_account('alice');
+    const res_deploy = await deploy('./tests/contracts/event_emit.arl', {}, { as: alice });
+    const res_call = await call(res_deploy.address, "exec", { prim: "Unit" }, { as: alice });
+    assert(res_call.events.length == 2)
+
+    const event_first = res_call.events[0];
+    assert(event_first.from.equals(new Address(res_deploy.address)))
+    assert(JSON.stringify(event_first.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
+    assert(event_first.tag == "e_event")
+    assert(JSON.stringify(event_first.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"0\"},{\"string\":\"toto\"}]}")
+    assert(event_first.consumed_gas == 1000)
+
+    const event_second = res_call.events[1];
+    assert(event_second.from.equals(new Address(res_deploy.address)))
+    assert(JSON.stringify(event_second.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
+    assert(event_second.tag == "e_event")
+    assert(JSON.stringify(event_second.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"2\"},{\"string\":\"titi\"}]}")
+    assert(event_second.consumed_gas == 1000)
   })
 })

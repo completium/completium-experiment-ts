@@ -78,7 +78,7 @@ export const set_mockup_chain_id = (input: att.Chain_id) => {
 }
 
 export const get_chain_id = async (): Promise<att.Chain_id> => {
-  const value :string = await Completium.getChainId();
+  const value: string = await Completium.getChainId();
   return new att.Chain_id(value)
 }
 
@@ -290,6 +290,22 @@ export const get_callback_value = async <T extends att.ArchetypeTypeArg>(callbac
   throw new Error(`get_callback_value: internal error`)
 }
 
+const process_events = (input: any): Array<att.EventData> => {
+  let events = []
+  if (input && input.events) {
+    events = input.events.map((x: any) => {
+      return {
+        from: new att.Address(x.from),
+        type: (expr_micheline_to_json(x.type) as att.MichelineType),
+        tag: x.tag,
+        payload: expr_micheline_to_json(x.payload),
+        consumed_gas: Number.parseInt(x.consumed_gas)
+      }
+    })
+  }
+  return events
+}
+
 /**
  * Calls a contract entrypoint
  * @param c contract address
@@ -304,7 +320,8 @@ export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Pa
     as: p.as ? p.as.pkh : undefined,
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   })
-  return { ...res, dummy: 0 }
+  const events: Array<att.EventData> = process_events(res)
+  return { ...res, events: events, dummy: 0 }
 }
 
 export const get_call_param = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>): Promise<att.CallParameter> => {
@@ -340,7 +357,7 @@ export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters
   }), {
     as: p.as ? p.as.pkh : undefined
   })
-  return res
+  return {...res, events: []}
 }
 
 export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.GetterResult> => {
@@ -350,7 +367,7 @@ export const exec_getter = async (contract: att.Address, entry: string, arg: att
     amount: param.amount ? param.amount.toString() + "utz" : undefined,
     json: true,
   })
-  return { value: res, dummy: 0 }
+  return { value: res, events: [], dummy: 0 }
 }
 
 export const exec_view = async (contract: att.Address, view: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.ViewResult> => {
@@ -376,10 +393,10 @@ export const transfer = async (from: Account, to: Account | string, amount: bigi
   return { ...res, dummy: 0 }
 }
 
-export const expr_micheline_to_json = (input: string) : att.Micheline =>  {
+export const expr_micheline_to_json = (input: string): att.Micheline => {
   return Completium.exprMichelineToJson(input) as att.Micheline
 }
 
-export const json_micheline_to_expr = (input: att.Micheline) : string  =>  {
+export const json_micheline_to_expr = (input: att.Micheline): string => {
   return Completium.jsonMichelineToExpr(input) as string
 }
