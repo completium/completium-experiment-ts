@@ -40,6 +40,17 @@ describe('Completium', () => {
     const big_map_id: bigint = storage;
     const key_value = { int: "2" };
     const key_type: MichelineType = { prim: "nat", annots: [] };
+    const value = await get_big_map_value(big_map_id, key_value, key_type);
+    assert(JSON.stringify(value) == `{"string":"mystr"}`);
+  })
+
+  it('get_big_map_value with value', async () => {
+    const alice = get_account('alice');
+    const res = await deploy('./tests/contracts/big_map.arl', {}, { as: alice });
+    const storage = await get_storage(res.address);
+    const big_map_id: bigint = storage;
+    const key_value = { int: "2" };
+    const key_type: MichelineType = { prim: "nat", annots: [] };
     const value_type: MichelineType = { prim: "string", annots: [] };
     const value = await get_big_map_value(big_map_id, key_value, key_type, value_type);
     assert(value == 'mystr');
