@@ -1,5 +1,5 @@
 import { Address, Bytes, Chain_id, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id } from '../src';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, get_call_param, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id, exec_batch } from '../src';
 
 const Completium = require('@completium/completium-cli');
 const assert = require('assert');
@@ -220,7 +220,7 @@ describe('Utils', () => {
 })
 
 describe('Events', () => {
-  it('check', async () => {
+  it('call', async () => {
     set_endpoint('mockup');
     const alice = get_account('alice');
     const res_deploy = await deploy('./tests/contracts/event_emit.arl', {}, { as: alice });
@@ -240,5 +240,32 @@ describe('Events', () => {
     assert(event_second.tag == "e_event")
     assert(JSON.stringify(event_second.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"2\"},{\"string\":\"titi\"}]}")
     assert(event_second.consumed_gas == 1000)
+  })
+
+  it('batch', async () => {
+    set_endpoint('mockup');
+    const alice = get_account('alice');
+    const res_deploy = await deploy('./tests/contracts/event_emit.arl', {}, { as: alice });
+    const param = await get_call_param(res_deploy.address, "exec", { prim: "Unit" }, { as: alice });
+    const params = [param, param, param]
+
+    const res_call = await exec_batch(params, { as: alice });
+    assert(res_call.events.length == 6)
+
+    for (let i = 0; i < 2; ++i) {
+      const event_first = res_call.events[i * 2 + 0];
+      assert(event_first.from.equals(new Address(res_deploy.address)))
+      assert(JSON.stringify(event_first.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
+      assert(event_first.tag == "e_event")
+      assert(JSON.stringify(event_first.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"0\"},{\"string\":\"toto\"}]}")
+      assert(event_first.consumed_gas == 1000)
+
+      const event_second = res_call.events[i * 2 + 1];
+      assert(event_second.from.equals(new Address(res_deploy.address)))
+      assert(JSON.stringify(event_second.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
+      assert(event_second.tag == "e_event")
+      assert(JSON.stringify(event_second.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"2\"},{\"string\":\"titi\"}]}")
+      assert(event_second.consumed_gas == 1000)
+    }
   })
 })

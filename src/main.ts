@@ -357,7 +357,8 @@ export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters
   }), {
     as: p.as ? p.as.pkh : undefined
   })
-  return {...res, events: []}
+  const events: Array<att.EventData> = process_events(res)
+  return {...res, events: events}
 }
 
 export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.GetterResult> => {
