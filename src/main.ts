@@ -321,7 +321,18 @@ export const call = async (c: string, e: string, a: att.Micheline, p: Partial<Pa
     amount: p.amount ? p.amount.toString() + "utz" : undefined
   })
   const events: Array<att.EventData> = process_events(res)
-  return { ...res, events: events, dummy: 0 }
+  const operation_hash = res.operation_hash ?? "";
+  const storage_size = Number.parseFloat(res.storage_size ?? "0");
+  const consumed_gas = Number.parseFloat(res.consumed_gas ?? "0");
+  const paid_storage_size_diff = Number.parseFloat(res.paid_storage_size_diff ?? "0");
+  return {
+    ...res,
+    operation_hash: operation_hash,
+    storage_size: storage_size,
+    consumed_gas: consumed_gas,
+    paid_storage_size_diff: paid_storage_size_diff,
+    events: events
+  }
 }
 
 export const get_call_param = async (c: string, e: string, a: att.Micheline, p: Partial<Parameters>): Promise<att.CallParameter> => {
@@ -358,7 +369,7 @@ export const exec_batch = async (cps: att.CallParameter[], p: Partial<Parameters
     as: p.as ? p.as.pkh : undefined
   })
   const events: Array<att.EventData> = process_events(res)
-  return {...res, events: events}
+  return { ...res, events: events }
 }
 
 export const exec_getter = async (contract: att.Address, entry: string, arg: att.Micheline, param: Partial<Parameters>): Promise<att.GetterResult> => {
