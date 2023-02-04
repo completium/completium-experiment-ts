@@ -412,3 +412,19 @@ export const expr_micheline_to_json = (input: string): att.Micheline => {
 export const json_micheline_to_expr = (input: att.Micheline): string => {
   return Completium.jsonMichelineToExpr(input) as string
 }
+
+export interface RegisterGlobalConstantResult {
+  status: "passed" | "error";
+  global_address : string | undefined,
+  stderr: string,
+  stdout: string
+}
+
+export const register_global_constant = async (input: att.Micheline, param: Partial<Parameters>): Promise<RegisterGlobalConstantResult> => {
+  const mich_value : string = json_micheline_to_expr(input);
+  return await Completium.registerGlobalConstant({
+    value: mich_value,
+    as: param.as ? param.as.pkh : undefined,
+    force: true
+  })
+}
