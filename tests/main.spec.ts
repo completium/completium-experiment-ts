@@ -1,5 +1,5 @@
 import { Address, Bytes, Chain_id, Micheline, MichelineType, Mint, Nat } from '@completium/archetype-ts-types';
-import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, get_call_param, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id, exec_batch, register_global_constant } from '../src';
+import { set_mockup, set_endpoint, get_endpoint, is_mockup, deploy, originate, get_account, get_call_param, set_quiet, Account, get_big_map_value, get_storage, get_raw_storage, expect_to_fail, call, set_mockup_now, get_mockup_now, delay_mockup_now_by_second, delay_mockup_now_by_minute, delay_mockup_now_by_hour, delay_mockup_now_by_day, delay_mockup_now_by_week, expr_micheline_to_json, json_micheline_to_expr, set_mockup_chain_id, get_chain_id, exec_batch, register_global_constant, mockup_bake, get_mockup_level } from '../src';
 
 const Completium = require('@completium/completium-cli');
 const assert = require('assert');
@@ -286,4 +286,15 @@ describe('Utils', () => {
     const alice = get_account('alice');
     const res = await register_global_constant(new Nat(3).to_mich(), { as: alice });
   })
+
+  // it('get_mockup_level and mockup_bake', async () => {
+  //   const delta = 5;
+  //   const before_level = await get_mockup_level();
+  //   for (var i = 0; i < delta; ++i) {
+  //     await mockup_bake();
+  //   }
+  //   const after_level = await get_mockup_level();
+  //   assert(parseInt(before_level) + delta ==  parseInt(after_level))
+  // })
+
 })

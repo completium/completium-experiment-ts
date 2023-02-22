@@ -428,3 +428,11 @@ export const register_global_constant = async (input: att.Micheline, param: Part
     force: true
   })
 }
+
+export const get_mockup_level = async () : Promise<string> => {
+  return await Completium.getMockupLevel()
+}
+
+export const mockup_bake = async () => {
+  return await Completium.mockupBake({})
+}
