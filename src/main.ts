@@ -459,7 +459,7 @@ export const reset_experiment = async (parameters?: ResetExperimentParameters) =
   const endpoint = parameters?.endpoint ?? 'mockup'
   const quiet = parameters?.quiet ?? true
 
+  set_quiet(quiet)
   Completium.setAccount(account)
   set_endpoint(endpoint)
-  set_quiet(quiet)
 }
