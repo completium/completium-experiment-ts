@@ -415,13 +415,13 @@ export const json_micheline_to_expr = (input: att.Micheline): string => {
 
 export interface RegisterGlobalConstantResult {
   status: "passed" | "error";
-  global_address : string | undefined,
+  global_address: string | undefined,
   stderr: string,
   stdout: string
 }
 
 export const register_global_constant = async (input: att.Micheline, param: Partial<Parameters>): Promise<RegisterGlobalConstantResult> => {
-  const mich_value : string = json_micheline_to_expr(input);
+  const mich_value: string = json_micheline_to_expr(input);
   return await Completium.registerGlobalConstant({
     value: mich_value,
     as: param.as ? param.as.pkh : undefined,
@@ -429,10 +429,37 @@ export const register_global_constant = async (input: att.Micheline, param: Part
   })
 }
 
-export const get_mockup_level = async () : Promise<string> => {
+export const get_mockup_level = async (): Promise<string> => {
   return await Completium.getMockupLevel()
 }
 
 export const mockup_bake = async () => {
   return await Completium.mockupBake({})
+}
+
+export interface MockupInitParameters {
+  protocol?: string,
+}
+
+export const mockup_init = async (parameters ?: MockupInitParameters): Promise<void> => {
+  const obj = {
+    protocol: parameters?.protocol ?? null
+  }
+  return await Completium.mockupInit(obj)
+}
+
+export interface ResetExperimentParameters {
+  account?: string,
+  endpoint?: string,
+  quiet?: boolean,
+}
+
+export const reset_experiment = async (parameters?: ResetExperimentParameters) => {
+  const account = parameters?.account ?? 'alice'
+  const endpoint = parameters?.endpoint ?? 'mockup'
+  const quiet = parameters?.quiet ?? true
+
+  Completium.setAccount(account)
+  set_endpoint(endpoint)
+  set_quiet(quiet)
 }
