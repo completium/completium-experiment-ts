@@ -448,13 +448,13 @@ export const mockup_init = async (parameters ?: MockupInitParameters): Promise<v
   return await Completium.mockupInit(obj)
 }
 
-export interface ResetExperimentParameters {
+export interface ConfigureExperimentParameters {
   account?: string,
   endpoint?: string,
   quiet?: boolean,
 }
 
-export const reset_experiment = async (parameters?: ResetExperimentParameters) => {
+export const configure_experiment = async (parameters?: ConfigureExperimentParameters) => {
   const account = parameters?.account ?? 'alice'
   const endpoint = parameters?.endpoint ?? 'mockup'
   const quiet = parameters?.quiet ?? true
