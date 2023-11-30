@@ -259,14 +259,14 @@ describe('Events', () => {
     assert(JSON.stringify(event_first.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
     assert(event_first.tag == "e_event")
     assert(JSON.stringify(event_first.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"0\"},{\"string\":\"toto\"}]}")
-    assert(event_first.consumed_gas == 1000)
+    assert(event_first.consumed_gas == 100)
 
     const event_second = res_call.events[1];
     assert(event_second.from.equals(new Address(res_deploy.address)))
     assert(JSON.stringify(event_second.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
     assert(event_second.tag == "e_event")
     assert(JSON.stringify(event_second.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"2\"},{\"string\":\"titi\"}]}")
-    assert(event_second.consumed_gas == 1000)
+    assert(event_second.consumed_gas == 100)
   })
 
   it('batch', async () => {
@@ -285,14 +285,14 @@ describe('Events', () => {
       assert(JSON.stringify(event_first.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
       assert(event_first.tag == "e_event")
       assert(JSON.stringify(event_first.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"0\"},{\"string\":\"toto\"}]}")
-      assert(event_first.consumed_gas == 1000)
+      assert(event_first.consumed_gas == 100)
 
       const event_second = res_call.events[i * 2 + 1];
       assert(event_second.from.equals(new Address(res_deploy.address)))
       assert(JSON.stringify(event_second.type) == "{\"prim\":\"pair\",\"args\":[{\"prim\":\"nat\",\"annots\":[\"%a\"]},{\"prim\":\"string\",\"annots\":[\"%b\"]}]}")
       assert(event_second.tag == "e_event")
       assert(JSON.stringify(event_second.payload) == "{\"prim\":\"Pair\",\"args\":[{\"int\":\"2\"},{\"string\":\"titi\"}]}")
-      assert(event_second.consumed_gas == 1000)
+      assert(event_second.consumed_gas == 100)
     }
   })
 })
