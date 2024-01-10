@@ -463,3 +463,8 @@ export const configure_experiment = async (parameters?: ConfigureExperimentParam
   Completium.setAccount(account)
   set_endpoint(endpoint)
 }
+
+export const get_sandbox_exec_address = () : att.Address => {
+  const addr = Completium.get_sandbox_exec_address();
+  return new att.Address(addr)
+}
