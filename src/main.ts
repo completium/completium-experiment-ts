@@ -130,7 +130,7 @@ export const blake2b = (b: att.Bytes): att.Bytes => {
 }
 
 export const get_balance = async (addr: att.Address): Promise<att.Tez> => {
-  const b = await Completium.getBalance(addr.toString())
+  const b = await Completium.retrieveBalanceFor(addr.toString())
   return new att.Tez(b, "mutez")
 }
 
